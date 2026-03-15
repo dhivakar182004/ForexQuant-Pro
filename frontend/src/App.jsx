@@ -49,11 +49,11 @@ const ConnectionMonitor = () => {
     };
   }, []);
 
-  if (isOnline) return null;
+  if (isReachable) return null;
 
   return (
     <div className="position-fixed top-0 start-0 w-100 bg-danger text-white text-center py-2 fade-in" style={{ fontSize: '0.8rem', fontWeight: 700, zIndex: 9999 }}>
-      ⚠️ SERVER UNREACHABLE: Please ensure the backend is running on port 8080 or check your network.
+      ⚠️ SERVER UNREACHABLE: Please ensure the backend is running on port 8081 or check your network.
     </div>
   );
 };
