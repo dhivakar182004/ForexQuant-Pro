@@ -18,6 +18,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -36,6 +39,9 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -86,15 +92,33 @@ public class AuthController {
                     .body(new MessageResponse("Error: User not found!"));
         }
 
-        // Mock OTP generation for replica demo
+        // Generate OTP
         String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
         user.setOtp(otp);
         user.setOtpExpiry(LocalDateTime.now().plusMinutes(10));
         userRepository.save(user);
 
-        System.out.println("DEBUG: OTP for " + email + " is " + otp);
+        // Send Real Email
+        System.out.println("DEBUG: Sending OTP " + otp + " to " + email);
+        try {
+            sendEmail(email, "Your ForexQuant Pro OTP",
+                    "Your verification code is: " + otp + "\n\nThis code will expire in 10 minutes.");
+        } catch (Exception e) {
+            System.err.println("ERROR: Failed to send OTP email: " + e.getMessage());
+            return ResponseEntity.internalServerError()
+                    .body(new MessageResponse("Error: Could not send email. Please check server logs."));
+        }
 
-        return ResponseEntity.ok(new MessageResponse("OTP sent successfully!"));
+        return ResponseEntity.ok(new MessageResponse("OTP sent successfully to " + email));
+    }
+
+    private void sendEmail(String to, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("ForexQuant Pro <noreply@forexquant.com>");
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        mailSender.send(message);
     }
 
     @PostMapping("/otp/verify")
