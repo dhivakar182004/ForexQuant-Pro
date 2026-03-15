@@ -24,12 +24,13 @@ services:
       - db
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=http://localhost:8081/api/auth/
     restart: always
     ports:
       - "80:80"
-    environment:
-      VITE_API_URL: http://localhost:8081/api/auth/
     depends_on:
       - backend
 
