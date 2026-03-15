@@ -1,165 +1,144 @@
 :root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-base: 'Inter', -apple-system, system-ui, sans-serif;
 
-  /* Technical Slate & Cyan Theme */
-  --bg-primary: #0c0d10;
-  /* Technical Charcoal */
-  --bg-secondary: #161921;
-  /* Slate Grey */
-  --bg-tertiary: #1e222d;
-  /* Lighter Slate */
-  --bg-card: rgba(22, 25, 33, 0.85);
+  /* GoCharting Replica Colors */
+  --go-purple: #7b59d0;
+  --go-purple-light: rgba(123, 89, 208, 0.1);
+  --go-green: #00b894;
+  --go-red: #d63031;
 
-  /* Accents */
-  --accent-primary: #00bcd4;
-  /* Clean Cyan */
-  --accent-hover: #26c6da;
-  --accent-glow: rgba(0, 188, 212, 0.3);
+  /* Dark Mode Palette */
+  --bg-app: #0c0d10;
+  --bg-panel: #161921;
+  --bg-deep: #06070a;
+  --border-main: #2a2e39;
+  --text-main: #d1d4dc;
+  --text-bright: #ffffff;
+  --text-dim: #787b86;
 
-  /* Trading States */
-  --trade-profit: #22c55e;
-  --trade-loss: #ef4444;
-  --trade-neutral: #94a3b8;
-
-  /* Text */
-  --text-primary: #ffffff;
-  --text-secondary: #b2b5be;
-  --text-muted: #787b86;
-
-  /* Borders */
-  --border-color: #2a2e39;
-  --border-focus: #00bcd4;
-
-  /* Transitions */
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-
-  color-scheme: dark;
+  /* Spacing & Dimensions */
+  --nav-height: 48px;
+  --tool-width: 48px;
+  --panel-width: 320px;
 }
 
 body {
   margin: 0;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  min-height: 100vh;
-  /* Technical Grid Background */
+  font-family: var(--font-base);
+  background: var(--bg-app);
+  color: var(--text-main);
+  overflow: hidden;
+  /* Terminal feel */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grid Background */
+.terminal-grid {
   background-image:
-    linear-gradient(var(--border-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-  background-size: 40px 40px;
-  background-position: center;
-  overflow-x: hidden;
+    linear-gradient(var(--border-main) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-main) 1px, transparent 1px);
+  background-size: 30px 30px;
 }
 
-/* Glassmorphism Refined */
-.glass-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  transition: var(--transition);
-}
-
-.glass-card:hover {
-  border-color: var(--accent-primary);
-}
-
-/* Buttons */
-.btn-primary-custom {
-  background-color: var(--accent-primary);
-  border: none;
-  color: #000;
-  font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 6px;
-  transition: var(--transition);
-}
-
-.btn-primary-custom:hover {
-  background-color: var(--accent-hover);
-  box-shadow: 0 0 15px var(--accent-glow);
-  transform: translateY(-1px);
-}
-
-/* Form Inputs */
-.dark-input {
-  background-color: var(--bg-tertiary) !important;
-  border: 1px solid var(--border-color) !important;
-  color: var(--text-primary) !important;
-  border-radius: 4px !important;
-  transition: var(--transition);
-}
-
-.dark-input:focus {
-  border-color: var(--accent-primary) !important;
-  box-shadow: 0 0 0 2px var(--accent-glow) !important;
-}
-
-.invalid-feedback {
-  color: var(--trade-loss);
-  font-size: 0.8rem;
-  margin-top: 4px;
-}
-
-/* Layout Utilities */
-.fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsiveness */
-@media (max-width: 992px) {
-  .sidebar {
-    position: fixed;
-    z-index: 1000;
-    left: -260px;
-    transition: left 0.3s ease;
-  }
-
-  .sidebar.active {
-    left: 0;
-  }
-
-  .main-content {
-    margin-left: 0 !important;
-    padding: 15px !important;
-  }
-}
-
-@media (max-width: 576px) {
-  .glass-card {
-    padding: 1.5rem !important;
-  }
-
-  .metric-card {
-    margin-bottom: 1rem;
-  }
-}
-
-/* GoCharting Specifics */
-.auth-bg {
+/* Terminal Components */
+.terminal-layout {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
+}
+
+.terminal-top-nav {
+  height: var(--nav-height);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-main);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 16px;
+}
+
+.terminal-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.terminal-left-tools {
+  width: var(--tool-width);
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-main);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  gap: 12px;
+  align-items: center;
+}
+
+.chart-container {
+  flex: 1;
+  position: relative;
+  background: var(--bg-app);
+}
+
+.terminal-right-panels {
+  width: var(--panel-width);
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-main);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Auth Cards (GoCharting 1:1 Style) */
+.go-auth-bg {
+  height: 100vh;
+  background: radial-gradient(circle at center, #f0f4ff 0%, #d9e2f3 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at center, #161921 0%, #0c0d10 100%);
 }
 
-.auth-card {
-  width: 100%;
-  max-width: 400px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+.go-auth-card {
+  background: white;
+  width: 440px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+}
+
+.go-btn-primary {
+  background: #d1d5db;
+  /* Default disabled/inactive style */
+  color: #374151;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.go-btn-primary.active {
+  background: #c3dafe;
+  color: #1e40af;
+}
+
+.go-btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+/* Small UI Elements */
+.icon-btn {
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-bright);
+}
+
+.icon-btn.active {
+  color: var(--go-purple);
+  background: var(--go-purple-light);
 }

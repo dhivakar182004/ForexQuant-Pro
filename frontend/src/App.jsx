@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Terminal from './pages/Terminal';
 import Strategies from './pages/Strategies';
 import Backtesting from './pages/Backtesting';
 import Analytics from './pages/Analytics';
@@ -33,7 +34,8 @@ function App() {
         {/* Protected Dashboard Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route index element={<Navigate to="/terminal" replace />} />
+            <Route path="terminal" element={<Terminal />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="strategies" element={<Strategies />} />
             <Route path="backtesting" element={<Backtesting />} />
