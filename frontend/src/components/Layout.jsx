@@ -1,16 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopNavbar from './TopNavbar';
 
 const Layout = () => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
     return (
-        <div className="app-container">
-            <Sidebar />
-            <div className="main-content">
-                <TopNavbar />
-                <main className="page-content">
-                    <Outlet />
+        <div className="d-flex vh-100 bg-black">
+            <Sidebar isOpen={isSidebarOpen} setIsOpen={isSidebarOpen ? setIsSidebarOpen : setIsSidebarOpen} />
+
+            <div className="main-content flex-grow-1 d-flex flex-column overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
+                <TopNavbar onMenuClick={() => setIsSidebarOpen(true)} />
+
+                <main className="flex-grow-1 overflow-auto p-4 p-md-5">
+                    <div className="container-fluid p-0">
+                        <Outlet />
+                    </div>
                 </main>
             </div>
         </div>
