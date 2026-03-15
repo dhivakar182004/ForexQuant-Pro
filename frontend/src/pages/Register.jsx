@@ -101,7 +101,7 @@ const Register = () => {
         <div className="go-auth-bg">
             <div className="go-auth-card fade-in-up">
                 <div className="text-center mb-4">
-                    <h2 style={{ color: '#7b59d0', fontWeight: 800, letterSpacing: '-1px' }}>GoCharting</h2>
+                    <h2 style={{ color: '#7b59d0', fontWeight: 800, letterSpacing: '-1px' }}>ForexQuant Pro</h2>
                 </div>
 
                 <h1 className="mb-4" style={{ color: '#7b59d0', fontWeight: 700, fontSize: '1.8rem' }}>Get Started</h1>

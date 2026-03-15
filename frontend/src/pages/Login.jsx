@@ -54,7 +54,7 @@ const Login = () => {
         } catch (err) {
             console.error(err);
             if (!err.response) {
-                setError('Server is not reachable. Please check if your backend is running on port 8080.');
+                setError('Server is not reachable. Please check if your backend is running on port 8081.');
             } else {
                 setError(err.response?.data?.message || 'Authentication failed. Please check your credentials.');
             }
@@ -91,7 +91,7 @@ const Login = () => {
         <div className="go-auth-bg">
             <div className="go-auth-card fade-in-up">
                 <div className="text-center mb-5">
-                    <h2 style={{ color: '#7b59d0', fontWeight: 800, letterSpacing: '-1px' }}>GoCharting</h2>
+                    <h2 style={{ color: '#7b59d0', fontWeight: 800, letterSpacing: '-1px' }}>ForexQuant Pro</h2>
                 </div>
 
                 <h1 className="mb-4" style={{ color: '#7b59d0', fontWeight: 700, fontSize: '1.8rem' }}>Sign In</h1>
