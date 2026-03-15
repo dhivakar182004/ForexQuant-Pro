@@ -68,4 +68,52 @@ public class AuthController {
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
+    @GetMapping("/health")
+    public ResponseEntity<?> healthCheck() {
+        return ResponseEntity.ok(new com.forexquant.payload.response.MessageResponse("OK"));
+    }
+
+    @PostMapping("/otp/send")
+    public ResponseEntity<?> sendOtp(@RequestBody java.util.Map<String, String> request) {
+        String email = request.get("email");
+        com.forexquant.model.User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseEntity.badRequest()
+                    .body(new com.forexquant.payload.response.MessageResponse("Error: User not found!"));
+        }
+
+        // Mock OTP generation for replica demo
+        String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
+        user.setOtp(otp);
+        user.setOtpExpiry(java.time.LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+
+        System.out.println("DEBUG: OTP for " + email + " is " + otp);
+
+        return ResponseEntity.ok(new com.forexquant.payload.response.MessageResponse("OTP sent successfully!"));
+    }
+
+    @PostMapping("/otp/verify")
+    public ResponseEntity<?> verifyOtp(@RequestBody java.util.Map<String, String> request) {
+        String email = request.get("email");
+        String code = request.get("code");
+
+        com.forexquant.model.User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null || user.getOtp() == null || !user.getOtp().equals(code)) {
+            return ResponseEntity.badRequest()
+                    .body(new com.forexquant.payload.response.MessageResponse("Error: Invalid OTP!"));
+        }
+
+        if (user.getOtpExpiry().isBefore(java.time.LocalDateTime.now())) {
+            return ResponseEntity.badRequest()
+                    .body(new com.forexquant.payload.response.MessageResponse("Error: OTP expired!"));
+        }
+
+        user.setOtp(null);
+        user.setOtpExpiry(null);
+        userRepository.save(user);
+
+        return ResponseEntity.ok(new com.forexquant.payload.response.MessageResponse("OTP verified successfully!"));
+    }
 }
