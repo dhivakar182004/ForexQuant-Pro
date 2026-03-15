@@ -101,10 +101,10 @@ const Register = () => {
         <div className="go-auth-bg">
             <div className="go-auth-card fade-in-up">
                 <div className="text-center mb-4">
-                    <h2 style={{ color: '#7b59d0', fontWeight: 800, letterSpacing: '-1px' }}>ForexQuant Pro</h2>
+                    <h2 style={{ color: 'var(--fq-accent)', fontWeight: 800, letterSpacing: '-1px' }}>ForexQuant Pro</h2>
                 </div>
 
-                <h1 className="mb-4" style={{ color: '#7b59d0', fontWeight: 700, fontSize: '1.8rem' }}>Get Started</h1>
+                <h1 className="mb-4" style={{ color: 'var(--fq-accent)', fontWeight: 700, fontSize: '1.8rem' }}>Get Started</h1>
 
                 {error && (
                     <div className="alert alert-danger d-flex align-items-start gap-2 py-3 mb-4 small border-0" style={{ background: '#fee2e2', color: '#dc2626', borderRadius: '8px' }}>
@@ -197,7 +197,7 @@ const Register = () => {
 
                 <div className="text-center">
                     <span className="text-muted small">Already have an account? </span>
-                    <Link to="/login" style={{ color: '#7b59d0', textDecoration: 'none', fontWeight: 600 }}>Sign In</Link>
+                    <Link to="/login" style={{ color: 'var(--fq-accent)', textDecoration: 'none', fontWeight: 600 }}>Sign In</Link>
                 </div>
             </div>
 

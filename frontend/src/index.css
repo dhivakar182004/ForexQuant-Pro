@@ -1,11 +1,11 @@
 :root {
   --font-base: 'Inter', -apple-system, system-ui, sans-serif;
 
-  /* ForexQuant Pro Branding Colors */
-  --go-purple: #7b59d0;
-  --go-purple-light: rgba(123, 89, 208, 0.1);
-  --go-green: #00b894;
-  --go-red: #d63031;
+  /* ForexQuant Pro Branding Colors (Cyan & Slate) */
+  --fq-accent: #00bcd4;
+  --fq-accent-light: rgba(0, 188, 212, 0.1);
+  --fq-green: #22c55e;
+  --fq-red: #ef4444;
 
   /* Dark Mode Palette */
   --bg-app: #0c0d10;
@@ -132,17 +132,17 @@ body {
 }
 
 .go-btn-primary.active {
-  background: var(--go-purple);
+  background: var(--fq-accent);
   color: white;
-  border-color: var(--go-purple);
+  border-color: var(--fq-accent);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(123, 89, 208, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.2);
 }
 
 .go-btn-primary.active:hover {
-  background: #6a49c0;
+  background: #00acc1;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(123, 89, 208, 0.4);
+  box-shadow: 0 6px 16px rgba(0, 188, 212, 0.3);
 }
 
 .go-btn-primary:active {
@@ -198,6 +198,6 @@ body {
 }
 
 .icon-btn.active {
-  color: var(--go-purple);
-  background: var(--go-purple-light);
+  color: var(--fq-accent);
+  background: var(--fq-accent-light);
 }

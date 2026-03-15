@@ -91,10 +91,10 @@ const Login = () => {
         <div className="go-auth-bg">
             <div className="go-auth-card fade-in-up">
                 <div className="text-center mb-5">
-                    <h2 style={{ color: '#7b59d0', fontWeight: 800, letterSpacing: '-1px' }}>ForexQuant Pro</h2>
+                    <h2 style={{ color: 'var(--fq-accent)', fontWeight: 800, letterSpacing: '-1px' }}>ForexQuant Pro</h2>
                 </div>
 
-                <h1 className="mb-4" style={{ color: '#7b59d0', fontWeight: 700, fontSize: '1.8rem' }}>Sign In</h1>
+                <h1 className="mb-4" style={{ color: 'var(--fq-accent)', fontWeight: 700, fontSize: '1.8rem' }}>Sign In</h1>
 
                 {error && (
                     <div className="alert alert-danger d-flex align-items-start gap-2 py-3 mb-4 small border-0" style={{ background: '#fee2e2', color: '#dc2626', borderRadius: '8px' }}>
@@ -149,7 +149,7 @@ const Login = () => {
                     </div>
 
                     <div className="text-end mb-4">
-                        <Link to="#" style={{ color: '#7b59d0', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none' }}>Forgot your password?</Link>
+                        <Link to="#" style={{ color: 'var(--fq-accent)', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none' }}>Forgot your password?</Link>
                     </div>
 
                     <button
@@ -189,7 +189,7 @@ const Login = () => {
                 </div>
 
                 <div className="text-center mt-5">
-                    <Link to="/register" style={{ color: '#7b59d0', textDecoration: 'none', fontWeight: 600 }}>Get started with a free account</Link>
+                    <Link to="/register" style={{ color: 'var(--fq-accent)', textDecoration: 'none', fontWeight: 600 }}>Get started with a free account</Link>
                 </div>
             </div>
 

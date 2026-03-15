@@ -129,8 +129,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                     background: rgba(255,255,255,0.05);
                 }
                 .side-link.active {
-                    color: var(--go-purple);
-                    background: var(--go-purple-light);
+                    color: var(--fq-accent);
+                    background: var(--fq-accent-light);
                 }
                 .icon-wrapper {
                     display: flex;

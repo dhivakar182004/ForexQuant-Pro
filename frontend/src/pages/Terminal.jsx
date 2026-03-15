@@ -10,7 +10,7 @@ const Terminal = () => {
             {/* Top Navigation */}
             <nav className="terminal-top-nav">
                 <div className="d-flex align-items-center gap-2 border-end pe-3 border-secondary">
-                    <div className="bg-purple p-1 rounded"><Zap size={18} color="white" /></div>
+                    <div className="bg-brand p-1 rounded"><Zap size={18} color="white" /></div>
                     <span className="fw-bold d-none d-md-inline" style={{ fontSize: '0.9rem' }}>NIFTY</span>
                     <ChevronDown size={14} className="text-dim" />
                 </div>
@@ -27,7 +27,7 @@ const Terminal = () => {
                 </div>
 
                 <div className="ms-auto d-flex align-items-center gap-3">
-                    <button className="btn btn-primary bg-purple border-0 px-3 py-1 small rounded-pill">UPGRADE</button>
+                    <button className="btn btn-primary bg-brand border-0 px-3 py-1 small rounded-pill">UPGRADE</button>
                     <div className="icon-btn rounded-circle"><Search size={18} /></div>
                 </div>
             </nav>
@@ -72,9 +72,9 @@ const Terminal = () => {
             </div>
 
             <style>{`
-        .bg-purple { background-color: var(--go-purple); }
-        .text-cyan { color: var(--accent-primary); }
-        .active-tab { border-bottom: 2px solid var(--go-purple) !important; color: white !important; background: var(--go-purple-light); }
+        .bg-brand { background-color: var(--fq-accent); }
+        .text-cyan { color: var(--fq-accent); }
+        .active-tab { border-bottom: 2px solid var(--fq-accent) !important; color: white !important; background: var(--fq-accent-light); }
       `}</style>
         </div>
     );
