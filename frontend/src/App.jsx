@@ -9,6 +9,7 @@ import Backtesting from './pages/Backtesting';
 import Analytics from './pages/Analytics';
 import TradeHistory from './pages/TradeHistory';
 import RiskTools from './pages/RiskTools';
+import OtpVerification from './pages/OtpVerification';
 import authService from './services/authService';
 import './App.css';
 
@@ -23,13 +24,41 @@ const ProtectedRoute = () => {
 
 const Settings = () => <div className="fade-in"><h2>System Settings</h2></div>;
 
+const ConnectionMonitor = () => {
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        await axios.get('http://localhost:8080/api/auth/health', { timeout: 2000 });
+        setIsOnline(true);
+      } catch (err) {
+        setIsOnline(false);
+      }
+    };
+    const interval = setInterval(checkStatus, 10000);
+    checkStatus();
+    return () => clearInterval(interval);
+  }, []);
+
+  if (isOnline) return null;
+
+  return (
+    <div className="position-fixed top-0 start-0 w-100 bg-danger text-white text-center py-2 fade-in" style={{ fontSize: '0.8rem', fontWeight: 700, zIndex: 9999 }}>
+      ⚠️ SERVER UNREACHABLE: Please ensure the backend is running on port 8080 or check your network.
+    </div>
+  );
+};
+
 function App() {
   return (
     <BrowserRouter>
+      <ConnectionMonitor />
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/verify-otp" element={<OtpVerification />} />
 
         {/* Protected Dashboard Routes */}
         <Route element={<ProtectedRoute />}>

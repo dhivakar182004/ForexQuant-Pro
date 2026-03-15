@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
-import { Mail, Lock, Eye, EyeOff, AlertCircle, LogIn } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPass, setShowPass] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [socialLoading, setSocialLoading] = useState(null); // 'google' or 'apple'
+    const [showSocialModal, setShowSocialModal] = useState(false);
     const [error, setError] = useState('');
 
     // Validation
@@ -45,21 +47,49 @@ const Login = () => {
         setLoading(true);
         setError('');
         try {
-            const data = await authService.login(email, password);
-            if (data) {
-                // Force a small delay for the "cool" feel
-                setTimeout(() => navigate('/terminal'), 500);
-            }
+            // In a high-security replica like GoCharting, login triggers an OTP
+            await authService.login(email, password);
+            await authService.sendOtp(email);
+            navigate('/verify-otp', { state: { email } });
         } catch (err) {
             console.error(err);
-            setError(err.response?.data?.message || 'Authentication failed. Please check your credentials.');
+            if (!err.response) {
+                setError('Server is not reachable. Please check if your backend is running on port 8080.');
+            } else {
+                setError(err.response?.data?.message || 'Authentication failed. Please check your credentials.');
+            }
             setLoading(false);
         }
     };
 
+    const handleSocialLogin = (provider) => {
+        setSocialLoading(provider);
+        setError('');
+        setShowSocialModal(true);
+
+        // Simulating the social OAuth flow for the GoCharting replica demo
+        setTimeout(() => {
+            if (provider === 'google') {
+                // In a real app, you'd redirect to window.location.href = API_URL + 'oauth2/google'
+                console.log('Redirecting to Google OAuth...');
+                // Mock success for the replica feel
+                localStorage.setItem('user', JSON.stringify({
+                    name: 'Google User',
+                    email: 'google@gmail.com',
+                    token: 'mock-google-token'
+                }));
+                navigate('/terminal');
+            } else if (provider === 'apple') {
+                setError('Apple Sign-In is currently in sandbox mode. Please use Google or Email.');
+                setSocialLoading(null);
+                setShowSocialModal(false);
+            }
+        }, 2000);
+    };
+
     return (
         <div className="go-auth-bg">
-            <div className="go-auth-card fade-in">
+            <div className="go-auth-card fade-in-up">
                 <div className="text-center mb-5">
                     <h2 style={{ color: '#7b59d0', fontWeight: 800, letterSpacing: '-1px' }}>GoCharting</h2>
                 </div>
@@ -67,8 +97,12 @@ const Login = () => {
                 <h1 className="mb-4" style={{ color: '#7b59d0', fontWeight: 700, fontSize: '1.8rem' }}>Sign In</h1>
 
                 {error && (
-                    <div className="alert alert-danger d-flex align-items-center gap-2 py-2 mb-4 small border-0" style={{ background: '#fee2e2', color: '#dc2626' }}>
-                        <AlertCircle size={16} /> {error}
+                    <div className="alert alert-danger d-flex align-items-start gap-2 py-3 mb-4 small border-0" style={{ background: '#fee2e2', color: '#dc2626', borderRadius: '8px' }}>
+                        <AlertCircle size={18} className="mt-1 flex-shrink-0" />
+                        <div>
+                            <div className="fw-bold">Connection Issue</div>
+                            {error}
+                        </div>
                     </div>
                 )}
 
@@ -121,9 +155,9 @@ const Login = () => {
                     <button
                         type="submit"
                         className={`go-btn-primary w-100 py-3 mb-4 ${(email && password && !errors.email && !errors.password) ? 'active' : ''}`}
-                        disabled={loading}
+                        disabled={loading || socialLoading}
                     >
-                        {loading ? 'Signing in...' : 'Sign In >'}
+                        {loading ? <div className="d-flex align-items-center justify-content-center gap-2"><Loader2 size={18} className="animate-spin" /> Connecting...</div> : 'Sign In >'}
                     </button>
                 </form>
 
@@ -133,13 +167,23 @@ const Login = () => {
 
                 <div className="row g-2 pt-2">
                     <div className="col-6">
-                        <button type="button" className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 py-2 small">
-                            <img src="https://www.google.com/favicon.ico" width="16" alt="google" /> Google
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 py-2 small fw-medium"
+                            onClick={() => handleSocialLogin('google')}
+                            disabled={loading || socialLoading}
+                        >
+                            {socialLoading === 'google' ? <Loader2 size={16} className="animate-spin" /> : <img src="https://www.google.com/favicon.ico" width="16" alt="google" />} Google
                         </button>
                     </div>
                     <div className="col-6">
-                        <button type="button" className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 py-2 small">
-                            <img src="https://www.apple.com/favicon.ico" width="16" alt="apple" /> Apple
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 py-2 small fw-medium"
+                            onClick={() => handleSocialLogin('apple')}
+                            disabled={loading || socialLoading}
+                        >
+                            {socialLoading === 'apple' ? <Loader2 size={16} className="animate-spin" /> : <img src="https://www.apple.com/favicon.ico" width="16" alt="apple" />} Apple
                         </button>
                     </div>
                 </div>
@@ -149,12 +193,22 @@ const Login = () => {
                 </div>
             </div>
 
+            {/* Simulated Social Auth Modal */}
+            {showSocialModal && (
+                <div className="position-fixed inset-0 d-flex align-items-center justify-content-center z-max fade-in" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 10000 }}>
+                    <div className="bg-white p-4 rounded-4 shadow-lg text-center" style={{ width: '320px' }}>
+                        <div className="spinner-border text-info mb-3" role="status"></div>
+                        <h5 className="fw-bold">Connecting...</h5>
+                        <p className="small text-muted mb-0">Authenticating with {socialLoading === 'google' ? 'Google' : 'Apple'}</p>
+                    </div>
+                </div>
+            )}
+
             <style>{`
-                .transition-all { transition: all 0.2s ease-in-out; }
-                .border-danger { border-color: #ef4444 !important; }
-                @media (max-width: 768px) {
-                    .go-auth-card { margin: 0; border-radius: 0; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 2rem 1.5rem; }
-                }
+                .animate-spin { animation: spin 1s linear infinite; }
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                .fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+                @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
             `}</style>
         </div>
     );
