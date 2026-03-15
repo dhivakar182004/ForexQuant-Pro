@@ -80,8 +80,8 @@ const OtpVerification = () => {
                 </button>
 
                 <div className="text-center mb-4">
-                    <div className="bg-purple-light d-inline-flex p-3 rounded-circle mb-3">
-                        <Mail size={32} color="var(--go-purple)" />
+                    <div className="bg-brand-light d-inline-flex p-3 rounded-circle mb-3">
+                        <Mail size={32} color="var(--fq-accent)" />
                     </div>
                     <h2 style={{ fontWeight: 800 }}>Verify your email</h2>
                     <p className="text-muted small px-4">
@@ -140,7 +140,7 @@ const OtpVerification = () => {
                         onClick={handleResend}
                         disabled={timer > 0 || loading}
                         className={`btn btn-link p-0 small fw-bold text-decoration-none ${timer > 0 ? 'text-muted' : ''}`}
-                        style={{ color: timer > 0 ? '' : 'var(--go-purple)' }}
+                        style={{ color: timer > 0 ? '' : 'var(--fq-accent)' }}
                     >
                         {timer > 0 ? `Resend in ${timer}s` : 'Resend Code'}
                     </button>
@@ -148,9 +148,9 @@ const OtpVerification = () => {
             </div>
 
             <style>{`
-                .bg-purple-light { background: var(--go-purple-light); }
+                .bg-brand-light { background: var(--fq-accent-light); }
                 .animate-spin { animation: spin 1s linear infinite; }
-                input:focus { border-color: var(--go-purple) !important; outline: none; background: #fff !important; box-shadow: 0 0 0 4px var(--go-purple-light) !important; }
+                input:focus { border-color: var(--fq-accent) !important; outline: none; background: #fff !important; box-shadow: 0 0 0 4px var(--fq-accent-light) !important; }
             `}</style>
         </div>
     );
