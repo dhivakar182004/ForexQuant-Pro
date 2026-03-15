@@ -43,7 +43,14 @@ const logout = () => {
 };
 
 const getCurrentUser = () => {
-    return JSON.parse(localStorage.getItem('user'));
+    try {
+        const userStr = localStorage.getItem('user');
+        if (!userStr || userStr === 'undefined') return null;
+        return JSON.parse(userStr);
+    } catch (e) {
+        console.error("AuthService: Error parsing user from localStorage", e);
+        return null;
+    }
 };
 
 const authService = {

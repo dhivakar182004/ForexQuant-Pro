@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -28,17 +30,21 @@ const ConnectionMonitor = () => {
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     const checkStatus = async () => {
       try {
-        await axios.get('http://localhost:8080/api/auth/health', { timeout: 2000 });
-        setIsOnline(true);
+        await axios.get('http://localhost:8080/api/auth/health', { timeout: 3000 });
+        if (mounted) setIsOnline(true);
       } catch (err) {
-        setIsOnline(false);
+        if (mounted) setIsOnline(false);
       }
     };
-    const interval = setInterval(checkStatus, 10000);
+    const interval = setInterval(checkStatus, 15000);
     checkStatus();
-    return () => clearInterval(interval);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   if (isOnline) return null;
