@@ -121,23 +121,67 @@ body {
 }
 
 .go-btn-primary {
-  background: #d1d5db;
-  /* Default disabled/inactive style */
-  color: #374151;
-  border: none;
+  background: #f3f4f6;
+  color: #9ca3af;
+  border: 1px solid #e5e7eb;
   padding: 12px;
   border-radius: 8px;
   font-weight: 600;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: not-allowed;
 }
 
 .go-btn-primary.active {
-  background: #c3dafe;
-  color: #1e40af;
+  background: var(--go-purple);
+  color: white;
+  border-color: var(--go-purple);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(123, 89, 208, 0.3);
 }
 
-.go-btn-primary:hover:not(:disabled) {
-  opacity: 0.9;
+.go-btn-primary.active:hover {
+  background: #6a49c0;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(123, 89, 208, 0.4);
+}
+
+.go-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.transition-all {
+  transition: all 0.2s ease-in-out;
 }
 
 /* Small UI Elements */
