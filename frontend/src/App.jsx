@@ -27,20 +27,22 @@ const ProtectedRoute = () => {
 const Settings = () => <div className="fade-in"><h2>System Settings</h2></div>;
 
 const ConnectionMonitor = () => {
-  const [isOnline, setIsOnline] = useState(true);
+  const [isReachable, setIsReachable] = useState(true);
 
   useEffect(() => {
     let mounted = true;
-    const checkStatus = async () => {
+    const checkConnection = async () => {
       try {
-        await axios.get('http://localhost:8080/api/auth/health', { timeout: 3000 });
-        if (mounted) setIsOnline(true);
-      } catch (err) {
-        if (mounted) setIsOnline(false);
+        const response = await axios.get('http://localhost:8081/api/auth/health', { timeout: 5000 });
+        if (response.status === 200 && mounted) {
+          setIsReachable(true);
+        }
+      } catch (error) {
+        if (mounted) setIsReachable(false);
       }
     };
-    const interval = setInterval(checkStatus, 15000);
-    checkStatus();
+    const interval = setInterval(checkConnection, 15000);
+    checkConnection();
     return () => {
       mounted = false;
       clearInterval(interval);
