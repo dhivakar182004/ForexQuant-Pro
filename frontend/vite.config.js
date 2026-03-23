@@ -7,5 +7,6 @@ export default defineConfig({
   server: {
     port: 5174,
     strictPort: true,
+    host: true, // Allow external access and fix potential IPv6/v4 local resolution issues
   }
 })

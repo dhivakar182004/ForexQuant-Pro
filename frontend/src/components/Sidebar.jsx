@@ -50,8 +50,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             <aside className={`sidebar-container ${isOpen ? 'active' : ''} ${isTerminal ? 'mini' : ''}`}>
                 <div className="sidebar-header border-bottom border-secondary py-3 text-center">
                     <h5 className="fw-bold mb-0 text-white">
-                        <span style={{ color: 'var(--go-purple)' }}>ForexQuant</span>
-                        {!isTerminal && <span className="ms-1">Pro</span>}
+                        <span style={{ color: 'var(--fq-accent)' }}>ForexQuant</span>
+                        <span className="ms-1">Pro</span>
                     </h5>
                 </div>
 

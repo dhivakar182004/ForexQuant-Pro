@@ -14,6 +14,7 @@ public class Backtest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "strategy_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Strategy strategy;
 
     @Column(name = "start_date")

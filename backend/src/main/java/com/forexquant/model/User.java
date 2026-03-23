@@ -19,12 +19,14 @@ public class User {
     private String email;
 
     @Column(nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private String password;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "otp")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private String otp;
 
     @Column(name = "otp_expiry")

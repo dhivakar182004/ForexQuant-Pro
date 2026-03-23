@@ -27,13 +27,14 @@ const ProtectedRoute = () => {
 const Settings = () => <div className="fade-in"><h2>System Settings</h2></div>;
 
 const ConnectionMonitor = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081/api';
   const [isReachable, setIsReachable] = useState(true);
 
   useEffect(() => {
     let mounted = true;
     const checkConnection = async () => {
       try {
-        const response = await axios.get('http://localhost:8081/api/auth/health', { timeout: 5000 });
+        const response = await axios.get(`${API_BASE}/auth/health`, { timeout: 5000 });
         if (response.status === 200 && mounted) {
           setIsReachable(true);
         }

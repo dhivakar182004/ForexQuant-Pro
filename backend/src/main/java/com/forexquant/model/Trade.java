@@ -14,6 +14,7 @@ public class Trade {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "backtest_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Backtest backtest;
 
     @Column(nullable = false)
