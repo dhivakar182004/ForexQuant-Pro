@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface BacktestRepository extends JpaRepository<Backtest, Long> {
-    List<Backtest> findByStrategyId(Long strategyId);
+    List<Backtest> findByUserId(Long userId);
 }

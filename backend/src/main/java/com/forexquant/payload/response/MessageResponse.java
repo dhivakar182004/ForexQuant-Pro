@@ -1,7 +1,12 @@
 package com.forexquant.payload.response;
-import lombok.Data;
-@Data
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
 public class MessageResponse {
     private String message;
-    public MessageResponse(String message) { this.message = message; }
 }

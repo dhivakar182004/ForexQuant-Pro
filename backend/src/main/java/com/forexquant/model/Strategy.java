@@ -1,48 +1,29 @@
 package com.forexquant.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
 
-@Data
 @Entity
 @Table(name = "strategies")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Strategy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @com.fasterxml.jackson.annotation.JsonIgnore
-    private User user;
-
-    @Column(name = "strategy_name", nullable = false)
-    private String strategyName;
-
     @Column(nullable = false)
-    private String pair;
+    private String name;
 
-    @Column(nullable = false)
-    private String timeframe;
+    private String description;
 
-    @Column(name = "entry_rule", columnDefinition = "TEXT")
-    private String entryRule;
+    @Column(columnDefinition = "TEXT")
+    private String configJson;
 
-    @Column(name = "exit_rule", columnDefinition = "TEXT")
-    private String exitRule;
+    private Long userId;
 
-    @Column(name = "stop_loss")
-    private Double stopLoss;
-
-    @Column(name = "take_profit")
-    private Double takeProfit;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+    private boolean active = false;
 }

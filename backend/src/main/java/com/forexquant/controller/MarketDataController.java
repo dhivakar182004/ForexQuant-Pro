@@ -1,23 +1,31 @@
 package com.forexquant.controller;
 
-import com.forexquant.model.MarketData;
-import com.forexquant.repository.MarketDataRepository;
+import com.forexquant.model.Candle;
+import com.forexquant.repository.CandleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/market-data")
+@RequestMapping("/api/market")
 public class MarketDataController {
 
     @Autowired
-    MarketDataRepository marketDataRepository;
+    private CandleRepository candleRepository;
 
-    @GetMapping("/{pair}")
-    public ResponseEntity<List<MarketData>> getMarketData(@PathVariable String pair) {
-        return ResponseEntity.ok(marketDataRepository.findByPairOrderByDataDateAsc(pair.toUpperCase()));
+    @GetMapping("/history")
+    public ResponseEntity<List<Candle>> getHistoricalData(
+            @RequestParam String symbol,
+            @RequestParam String start,
+            @RequestParam String end) {
+        
+        LocalDateTime startTime = LocalDateTime.parse(start);
+        LocalDateTime endTime = LocalDateTime.parse(end);
+
+        List<Candle> history = candleRepository.findBySymbolAndTimestampBetweenOrderByTimestampAsc(symbol, startTime, endTime);
+        return ResponseEntity.ok(history);
     }
 }

@@ -7,26 +7,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/backtests")
 public class BacktestController {
 
     @Autowired
-    BacktestRepository backtestRepository;
+    private BacktestRepository backtestRepository;
 
     @Autowired
-    BacktestService backtestService;
+    private BacktestService backtestService;
 
-    @GetMapping("/strategy/{strategyId}")
-    public ResponseEntity<List<Backtest>> getStrategyBacktests(@PathVariable Long strategyId) {
-        return ResponseEntity.ok(backtestRepository.findByStrategyId(strategyId));
+    @PostMapping("/save")
+    public ResponseEntity<Backtest> saveSession(@RequestBody Backtest sessionResult) {
+        if (sessionResult.getStartTime() == null) {
+            sessionResult.setStartTime(LocalDateTime.now());
+        }
+        Backtest saved = backtestRepository.save(sessionResult);
+        return ResponseEntity.ok(saved);
     }
 
-    @PostMapping("/run/{strategyId}")
-    public ResponseEntity<Backtest> runBacktest(@PathVariable Long strategyId) {
-        return ResponseEntity.ok(backtestService.runBacktest(strategyId));
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Backtest>> getUserSessions(@PathVariable Long userId) {
+        return ResponseEntity.ok(backtestRepository.findByUserId(userId));
+    }
+
+    @PostMapping("/analyze/{userId}")
+    public ResponseEntity<Backtest> triggerAnalysis(@PathVariable Long userId, @RequestParam String sessionName) {
+        return ResponseEntity.ok(backtestService.runAnalyticsOnTrades(userId, sessionName));
     }
 }

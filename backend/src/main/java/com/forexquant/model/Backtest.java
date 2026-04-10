@@ -2,36 +2,41 @@ package com.forexquant.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
-@Table(name = "backtests")
+@Table(name = "backtest_sessions")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Backtest {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "strategy_id", nullable = false)
-    @com.fasterxml.jackson.annotation.JsonIgnore
-    private Strategy strategy;
+    @Column(nullable = false)
+    private String sessionName;
 
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
+    @Column(nullable = false)
+    private Long userId;
 
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
+    private String symbol;
 
-    @Column(name = "total_trades")
-    private Integer totalTrades;
+    @Column(nullable = false)
+    private LocalDateTime startTime;
 
-    @Column(name = "win_rate")
-    private Double winRate;
+    private LocalDateTime endTime;
 
-    @Column(name = "net_profit")
-    private Double netProfit;
+    private Double totalProfitLoss;
 
-    @Column(name = "max_drawdown")
     private Double maxDrawdown;
+
+    private Double sharpeRatio;
+
+    private Integer totalTrades;
+    
+    private Integer winRatePercentage;
 }

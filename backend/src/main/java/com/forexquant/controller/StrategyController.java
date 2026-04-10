@@ -1,39 +1,41 @@
 package com.forexquant.controller;
 
 import com.forexquant.model.Strategy;
-import com.forexquant.model.User;
 import com.forexquant.repository.StrategyRepository;
-import com.forexquant.repository.UserRepository;
-import com.forexquant.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/strategies")
+@CrossOrigin(origins = "*")
 public class StrategyController {
 
     @Autowired
-    StrategyRepository strategyRepository;
+    private StrategyRepository strategyRepository;
 
-    @Autowired
-    UserRepository userRepository;
-
-    @GetMapping
-    public ResponseEntity<List<Strategy>> getUserStrategies() {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ResponseEntity.ok(strategyRepository.findByUserId(userDetails.getId()));
+    @GetMapping("/user/{userId}")
+    public List<Strategy> getStrategiesByUser(@PathVariable Long userId) {
+        return strategyRepository.findByUserId(userId);
     }
 
-    @PostMapping
-    public ResponseEntity<Strategy> createStrategy(@RequestBody Strategy strategy) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findById(userDetails.getId()).orElseThrow();
-        strategy.setUser(user);
-        return ResponseEntity.ok(strategyRepository.save(strategy));
+    @PostMapping("/save")
+    public Strategy saveStrategy(@RequestBody Strategy strategy) {
+        return strategyRepository.save(strategy);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteStrategy(@PathVariable Long id) {
+        strategyRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/toggle/{id}")
+    public Strategy toggleStrategy(@PathVariable Long id) {
+        Strategy strategy = strategyRepository.findById(id).orElseThrow();
+        strategy.setActive(!strategy.isActive());
+        return strategyRepository.save(strategy);
     }
 }

@@ -2,38 +2,36 @@ package com.forexquant.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-@Data
 @Entity
 @Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String name;
+
+    private String pictureUrl;
+
+    @Column(unique = true)
+    private String googleId;
+
+    // Standard Authentication Field
     private String password;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    // Dual-Layer Auth Fields
+    private String totpSecret;
 
-    @Column(name = "otp")
-    @com.fasterxml.jackson.annotation.JsonIgnore
-    private String otp;
-
-    @Column(name = "otp_expiry")
-    private LocalDateTime otpExpiry;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+    @Column(nullable = false)
+    private boolean totpEnabled = false;
 }
