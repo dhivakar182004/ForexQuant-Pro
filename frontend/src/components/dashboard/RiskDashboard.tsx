@@ -56,8 +56,16 @@ export const RiskDashboard: React.FC<RiskDashboardProps> = ({ trades, onCloseTra
   }, [trades]);
 
   return (
-    <div className="risk-dashboard" style={{ padding: '20px', backgroundColor: '#1E222D', color: '#fff', borderRadius: '8px' }}>
-      <h3>Risk Management & Analytics</h3>
+    <div className="risk-dashboard" style={{ 
+      padding: '24px', 
+      backgroundColor: 'rgba(30, 34, 45, 0.7)', 
+      backdropFilter: 'blur(12px)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      color: '#fff', 
+      borderRadius: '16px',
+      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+    }}>
+      <h3 style={{ fontWeight: 600, letterSpacing: '-0.02em', marginBottom: '20px' }}>Risk Management & Analytics</h3>
       <div style={{ display: 'flex', gap: '2rem', marginTop: '15px' }}>
         <div>
           <span style={{ color: '#8b8e96' }}>Total P&L</span>
