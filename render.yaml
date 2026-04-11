@@ -4,6 +4,7 @@ services:
     env: docker
     dockerContext: backend
     dockerfilePath: backend/Dockerfile
+    healthCheckPath: /api/dashboard/analytics
     plan: free # Can be upgraded for higher performance
     envVars:
       - key: SPRING_PROFILES_ACTIVE
@@ -40,3 +41,4 @@ databases:
     databaseName: forexquant
     user: admin
     plan: free
+`

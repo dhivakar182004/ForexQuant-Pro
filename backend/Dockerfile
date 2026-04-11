@@ -17,4 +17,4 @@ COPY --from=build /app/target/*.jar app.jar
 ENV JAVA_OPTS="-Xmx384m -Xms256m"
 
 EXPOSE 8081
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar app.jar"]
