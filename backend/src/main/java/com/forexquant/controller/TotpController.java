@@ -60,6 +60,28 @@ public class TotpController {
         return ResponseEntity.ok(Map.of("qrCode", qrImageBase64));
     }
 
+    @PostMapping("/regenerate-totp")
+    public ResponseEntity<?> regenerateTotp(Authentication authentication) throws Exception {
+        User user = (User) authentication.getPrincipal(); 
+        if(user == null) return ResponseEntity.status(401).build();
+
+        String secret = secretGenerator.generate();
+        user.setTotpSecret(secret);
+        user.setTotpEnabled(false);
+        userRepository.save(user);
+
+        QrData data = qrDataFactory.newBuilder()
+                .label(user.getEmail())
+                .secret(user.getTotpSecret())
+                .issuer("ForexQuant Pro")
+                .build();
+                
+        String qrImageBase64 = dev.samstevens.totp.util.Utils.getDataUriForImage(
+                qrGenerator.generate(data), qrGenerator.getImageMimeType()
+        );
+        return ResponseEntity.ok(Map.of("qrCode", qrImageBase64));
+    }
+
     @PostMapping("/verify-totp")
     public ResponseEntity<?> verifyTotp(@RequestBody Map<String, String> payload, Authentication authentication) {
         User user = (User) authentication.getPrincipal();

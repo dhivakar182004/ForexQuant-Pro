@@ -35,15 +35,11 @@ export const Login = () => {
             <button onClick={handleLogin} className="btn btn-buy" style={{ width: '100%', fontSize: '16px' }}>Standard Sign In</button>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0' }}>
-             <hr style={{ flex: 1, borderColor: 'var(--border)' }} />
-             <span style={{ margin: '0 15px', color: 'var(--text-muted)', fontSize: '12px', fontWeight: 'bold' }}>OR</span>
-             <hr style={{ flex: 1, borderColor: 'var(--border)' }} />
+          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+              Don't have an account? <a href="/register" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 'bold' }}>Sign Up here</a>
+            </p>
           </div>
-
-          <a href={`${API_BASE}/oauth2/authorization/google`} className="btn" style={{ background: '#4285F4', color: '#fff', width: '100%', display: 'inline-block', textDecoration: 'none', padding: '16px 0', fontSize: '16px' }}>
-            Authenticate with Google
-          </a>
         </div>
       </div>
     </>
