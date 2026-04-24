@@ -81,11 +81,11 @@ export const Dashboard = () => {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+        <div className="dashboard-wrapper">
             <TopNavbar />
             <TickerNav />
             
-            <div className="glass-panel" style={{ padding: '15px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0', borderRadius: '0', borderBottom: '1px solid var(--border)' }}>
+            <div className="glass-panel dashboard-toolbar">
                 <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                     <div style={{ background: 'var(--bg-secondary)', padding: '5px 15px', borderRadius: '20px', fontSize: '13px' }}>
                         Connected to <span style={{color: 'var(--success)', fontWeight: 'bold'}}>FINNHUB</span> WSS
@@ -110,15 +110,15 @@ export const Dashboard = () => {
                 </div>
             </div>
 
-            <div style={{ display: 'flex', flex: 1, padding: '10px', gap: '10px' }}>
-                <div style={{ flex: 3, display: 'flex', flexDirection: 'column' }}>
+            <div className="dashboard-content">
+                <div className="chart-section">
                     <div className="glass-panel" style={{ flex: 1 }}>
                          <ErrorBoundary>
                             <TradingViewChart mode={mode} historicalData={historicalData} onPriceUpdate={setCurrentPrice} />
                          </ErrorBoundary>
                     </div>
                 </div>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div className="sidebar-section">
                     <div className="glass-panel" style={{ padding: '20px' }}>
                         <h3 style={{ marginBottom: '15px', color: 'var(--text-muted)' }}>EXECUTION ENGINE</h3>
                         <div style={{ marginBottom: '15px' }}>

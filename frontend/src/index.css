@@ -216,3 +216,66 @@ select:focus, input:focus {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255,255,255,0.2);
 }
+
+/* Responsive Dashboard Layout */
+.dashboard-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.dashboard-toolbar {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-content {
+  display: flex;
+  flex: 1;
+  padding: 10px;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.chart-section {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 300px;
+}
+
+@media (max-width: 950px) {
+  .dashboard-wrapper {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+  .dashboard-content {
+    flex-direction: column;
+    overflow: visible;
+  }
+  .dashboard-toolbar {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .chart-section {
+    min-height: 500px;
+  }
+  .sidebar-section {
+    width: 100%;
+  }
+}
