@@ -81,72 +81,98 @@ export const Dashboard = () => {
     };
 
     return (
-        <div className="dashboard-wrapper">
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#000' }}>
+            <div className="dynamic-bg"></div>
             <TopNavbar />
-            <TickerNav />
             
-            <div className="glass-panel dashboard-toolbar">
-                <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                    <div style={{ background: 'var(--bg-secondary)', padding: '5px 15px', borderRadius: '20px', fontSize: '13px' }}>
-                        Connected to <span style={{color: 'var(--success)', fontWeight: 'bold'}}>FINNHUB</span> WSS
+            <div className="dashboard-grid">
+                {/* Instruments Sidebar */}
+                <div className="grid-cell" style={{ borderRight: '1px solid var(--border)', width: '280px', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontWeight: '600', fontSize: '14px' }}>Instruments</span>
+                        <span style={{ color: 'var(--exness-yellow)', fontSize: '12px', cursor: 'pointer' }}>Edit</span>
                     </div>
-                    {mode === 'replay' && (
-                        <ReplayToolbar 
-                            isPlaying={isReplaying} 
-                            onTogglePlay={() => setIsReplaying(!isReplaying)}
-                            onRewind={() => {}} 
-                            onForward={() => {}}
-                            speed={replaySpeed}
-                            onSpeedChange={setReplaySpeed}
-                        />
-                    )}
-                </div>
-                
-                <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', background: 'var(--bg-secondary)', padding: '5px', borderRadius: '20px' }}>
-                        <button className={`btn tab-btn ${mode === 'live' ? 'active' : ''}`} onClick={() => setMode('live')}>Live WSS</button>
-                        <button className={`btn tab-btn ${mode === 'replay' ? 'active' : ''}`} onClick={() => { setMode('replay'); fetchHistory(); }}>Bar Replay</button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
+                        {['EURUSD', 'GBPUSD', 'USDJPY', 'XAUUSD', 'BTCUSD'].map(symbol => (
+                            <div key={symbol} className="exness-card" style={{ padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: symbol === 'EURUSD' ? 'var(--bg-hover)' : 'transparent' }}>
+                                <div>
+                                    <div style={{ fontSize: '13px', fontWeight: '600' }}>{symbol}</div>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Forex • 15m</div>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--success)' }}>1.08425</div>
+                                    <div style={{ fontSize: '11px', color: 'var(--success)' }}>+0.12%</div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
-            </div>
 
-            <div className="dashboard-content">
-                <div className="chart-section">
-                    <div className="glass-panel" style={{ flex: 1 }}>
-                         <ErrorBoundary>
-                            <TradingViewChart mode={mode} historicalData={historicalData} onPriceUpdate={setCurrentPrice} />
-                         </ErrorBoundary>
+                {/* Main Trading Area */}
+                <div style={{ display: 'grid', gridTemplateRows: '1fr 200px', flex: 1, overflow: 'hidden' }}>
+                    <div className="grid-cell" style={{ position: 'relative', padding: 0 }}>
+                        <TradingViewChart mode={mode} historicalData={historicalData} onPriceUpdate={setCurrentPrice} />
+                        
+                        {/* Overlay Controls */}
+                        <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', z-index: 10 }}>
+                            <div className="exness-card" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <span style={{ fontWeight: '600' }}>EURUSD</span>
+                                <span style={{ color: 'var(--success)' }}>{currentPrice.toFixed(5)}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Trade History / Positions Footer */}
+                    <div className="grid-cell" style={{ borderTop: '1px solid var(--border)', padding: 0 }}>
+                        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', display: 'flex', gap: '24px' }}>
+                            <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--exness-yellow)', borderBottom: '2px solid var(--exness-yellow)', paddingBottom: '10px' }}>Open Orders (1)</span>
+                            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Closed History</span>
+                        </div>
+                        <div style={{ padding: '16px' }}>
+                            <RiskDashboard trades={trades} onCloseTrade={closeTrade} />
+                        </div>
                     </div>
                 </div>
-                <div className="sidebar-section">
-                    <div className="glass-panel" style={{ padding: '20px' }}>
-                        <h3 style={{ marginBottom: '15px', color: 'var(--text-muted)' }}>EXECUTION ENGINE</h3>
-                        <div style={{ marginBottom: '15px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px', color: '#888' }}>UNITS (POSITION SIZE)</label>
+
+                {/* Right Side Trade Panel */}
+                <div className="grid-cell" style={{ borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div>
+                        <div style={{ display: 'flex', borderRadius: '4px', background: '#1a1a1a', padding: '2px', marginBottom: '20px' }}>
+                            <button className="btn-exness" style={{ flex: 1, background: 'transparent', color: '#fff' }}>Market</button>
+                            <button className="btn-exness" style={{ flex: 1, background: 'transparent', color: 'var(--text-muted)' }}>Pending</button>
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>LOT SIZE</label>
                             <input 
                                 type="number" 
                                 value={positionSize} 
                                 onChange={e => setPositionSize(Number(e.target.value))}
-                                style={{ width: '100%', fontSize: '18px', padding: '10px' }}
+                                style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px' }}
                             />
                         </div>
 
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <button className="btn btn-buy pulse" onClick={() => executeTrade('BUY')} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                <img src="/bull_icon.png" alt="Bull" style={{ height: '35px', marginBottom: '5px' }} />
-                                <span>MARKET BUY</span>
-                                <span style={{ fontSize: '11px', opacity: 0.8 }}>{(currentPrice + 0.00010).toFixed(5)}</span>
+                        <div style={{ display: 'flex', gap: '1px', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
+                            <button className="trade-btn trade-btn-sell" onClick={() => executeTrade('SELL')}>
+                                <span style={{ fontSize: '12px', marginBottom: '4px' }}>Sell</span>
+                                <span style={{ fontSize: '18px', fontWeight: '700' }}>{(currentPrice - 0.00002).toFixed(5)}</span>
                             </button>
-                            <button className="btn btn-sell pulse" onClick={() => executeTrade('SELL')} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                <img src="/bear_icon.png" alt="Bear" style={{ height: '35px', marginBottom: '5px' }} />
-                                <span>MARKET SELL</span>
-                                <span style={{ fontSize: '11px', opacity: 0.8 }}>{(currentPrice - 0.00010).toFixed(5)}</span>
+                            <button className="trade-btn trade-btn-buy" onClick={() => executeTrade('BUY')}>
+                                <span style={{ fontSize: '12px', marginBottom: '4px' }}>Buy</span>
+                                <span style={{ fontSize: '18px', fontWeight: '700' }}>{(currentPrice + 0.00002).toFixed(5)}</span>
                             </button>
                         </div>
                     </div>
 
-                    <div className="glass-panel" style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
-                        <RiskDashboard trades={trades} onCloseTrade={closeTrade} />
+                    <div style={{ marginTop: 'auto', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Margin</span>
+                            <span style={{ fontSize: '12px' }}>42.12 USD</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Free Margin</span>
+                            <span style={{ fontSize: '12px' }}>99,957.88 USD</span>
+                        </div>
                     </div>
                 </div>
             </div>
