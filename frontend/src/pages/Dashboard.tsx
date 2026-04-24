@@ -28,6 +28,7 @@ export const Dashboard = () => {
     const [replaySpeed, setReplaySpeed] = useState(1);
 
     useEffect(() => {
+        fetchHistory(); // Fetch historical data immediately so the live chart is not blank
         const queryParams = new URLSearchParams(window.location.search);
         const token = queryParams.get('token');
         if (token) {

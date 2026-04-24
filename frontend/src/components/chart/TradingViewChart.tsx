@@ -119,6 +119,17 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, histor
     }
   }, [mode, chartReady]);
 
+  // Set initial data for live mode
+  React.useEffect(() => {
+    if (mode === 'live' && chartReady && seriesRef.current && historicalData.length > 0) {
+        try {
+            seriesRef.current.setData(historicalData);
+        } catch (err) {
+            console.error("Error setting initial live data:", err);
+        }
+    }
+  }, [mode, chartReady, historicalData]);
+
   // Mode: Bar Replay Logic
   React.useEffect(() => {
     if (mode === 'replay' && isPlaying && historicalData.length > 0) {
