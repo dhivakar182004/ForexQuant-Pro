@@ -19,6 +19,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(unique = true)
+    private String phoneNumber;
+
     private String name;
 
     private String pictureUrl;

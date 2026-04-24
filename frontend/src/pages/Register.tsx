@@ -5,7 +5,7 @@ import { TickerNav } from '../components/TickerNav';
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
 
 export const Register = () => {
-    const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
+    const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '', phoneNumber: '' });
 
     const handleRegister = async () => {
         if (formData.password !== formData.confirmPassword) {
@@ -13,11 +13,15 @@ export const Register = () => {
             return;
         }
         try {
-            await axios.post(`${API_BASE}/api/auth/signup`, { email: formData.email, password: formData.password });
+            await axios.post(`${API_BASE}/api/auth/signup`, { 
+                email: formData.email, 
+                password: formData.password,
+                phoneNumber: formData.phoneNumber
+            });
             alert("Registration successful! Please log in.");
             window.location.href = '/login';
         } catch(err) {
-            alert("Registration failed. Email may already be in use.");
+            alert("Registration failed. Email or Phone may already be in use.");
         }
     };
 
@@ -33,6 +37,9 @@ export const Register = () => {
                         <label style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>EMAIL ADDRESS</label>
                         <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="Email Address" style={{ width: '100%', marginBottom: '20px' }} />
                         
+                        <label style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>PHONE NUMBER (OPTIONAL)</label>
+                        <input type="tel" value={formData.phoneNumber} onChange={e => setFormData({...formData, phoneNumber: e.target.value})} placeholder="+1 234 567 8900" style={{ width: '100%', marginBottom: '20px' }} />
+
                         <label style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>PASSWORD</label>
                         <input type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="Password" style={{ width: '100%', marginBottom: '20px' }} />
 

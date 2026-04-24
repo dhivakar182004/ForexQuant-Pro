@@ -22,6 +22,9 @@ public class AuthController {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private com.forexquant.service.OtpService otpService;
+
     @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("OK");
@@ -36,7 +39,13 @@ public class AuthController {
         User user = new User();
         user.setName(signUpRequest.getName());
         user.setEmail(signUpRequest.getEmail());
-        user.setPassword(signUpRequest.getPassword()); // For demonstration purposes (No BCrypt Context explicitly enabled)
+        user.setPassword(signUpRequest.getPassword()); // For demonstration purposes
+        if (signUpRequest.getPhoneNumber() != null && !signUpRequest.getPhoneNumber().isBlank()) {
+            if (userRepository.findByPhoneNumber(signUpRequest.getPhoneNumber()).isPresent()) {
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already in use!"));
+            }
+            user.setPhoneNumber(signUpRequest.getPhoneNumber());
+        }
         
         userRepository.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
@@ -44,7 +53,7 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        return userRepository.findByEmail(loginRequest.getEmail()).map(user -> {
+        return userRepository.findByEmailOrPhoneNumber(loginRequest.getEmail(), loginRequest.getEmail()).map(user -> {
             if (user.getPassword() != null && user.getPassword().equals(loginRequest.getPassword())) {
                 boolean isFullyAuthenticated = !user.isTotpEnabled();
                 String jwt = jwtUtils.generateJwtTokenFromEmail(user.getEmail(), isFullyAuthenticated);
@@ -53,5 +62,38 @@ public class AuthController {
                 return ResponseEntity.status(401).body(new MessageResponse("Error: Invalid password!"));
             }
         }).orElse(ResponseEntity.status(404).body(new MessageResponse("Error: User not found!")));
+    }
+
+    @PostMapping("/request-otp")
+    public ResponseEntity<?> requestOtp(@RequestBody Map<String, String> payload) {
+        String emailOrPhone = payload.get("emailOrPhone");
+        if (emailOrPhone == null || emailOrPhone.isBlank()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email or Phone is required"));
+        }
+        
+        return userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone).map(user -> {
+            otpService.generateAndSendOtp(emailOrPhone);
+            return ResponseEntity.ok(new MessageResponse("OTP sent successfully to " + emailOrPhone));
+        }).orElse(ResponseEntity.status(404).body(new MessageResponse("Error: User not found! Please register first.")));
+    }
+
+    @PostMapping("/login-otp")
+    public ResponseEntity<?> loginWithOtp(@RequestBody Map<String, String> payload) {
+        String emailOrPhone = payload.get("emailOrPhone");
+        String otp = payload.get("otp");
+        
+        if (emailOrPhone == null || otp == null) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Missing parameters"));
+        }
+        
+        if (otpService.verifyOtp(emailOrPhone, otp)) {
+            return userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone).map(user -> {
+                // OTP Login counts as fully authenticated (bypasses TOTP if they had it enabled)
+                String jwt = jwtUtils.generateJwtTokenFromEmail(user.getEmail(), true);
+                return ResponseEntity.ok(Map.of("token", jwt, "requiresTotp", false));
+            }).orElse(ResponseEntity.status(404).body(new MessageResponse("Error: User not found!")));
+        } else {
+            return ResponseEntity.status(401).body(new MessageResponse("Error: Invalid or expired OTP"));
+        }
     }
 }
