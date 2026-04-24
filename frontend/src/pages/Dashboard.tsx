@@ -132,12 +132,12 @@ export const Dashboard = () => {
                         </div>
 
                         <div style={{ display: 'flex', gap: '10px' }}>
-                            <button className="btn btn-buy" onClick={() => executeTrade('BUY')} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                            <button className="btn btn-buy pulse" onClick={() => executeTrade('BUY')} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                 <img src="/bull_icon.png" alt="Bull" style={{ height: '35px', marginBottom: '5px' }} />
                                 <span>MARKET BUY</span>
                                 <span style={{ fontSize: '11px', opacity: 0.8 }}>{(currentPrice + 0.00010).toFixed(5)}</span>
                             </button>
-                            <button className="btn btn-sell" onClick={() => executeTrade('SELL')} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                            <button className="btn btn-sell pulse" onClick={() => executeTrade('SELL')} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                 <img src="/bear_icon.png" alt="Bear" style={{ height: '35px', marginBottom: '5px' }} />
                                 <span>MARKET SELL</span>
                                 <span style={{ fontSize: '11px', opacity: 0.8 }}>{(currentPrice - 0.00010).toFixed(5)}</span>
