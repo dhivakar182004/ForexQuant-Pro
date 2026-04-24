@@ -3,7 +3,7 @@ services:
     name: forex-quant-backend
     env: docker
     dockerContext: backend
-    dockerfilePath: Dockerfile
+    dockerfilePath: backend/Dockerfile
     healthCheckPath: /api/dashboard/analytics
     plan: free # Can be upgraded for higher performance
     envVars:
