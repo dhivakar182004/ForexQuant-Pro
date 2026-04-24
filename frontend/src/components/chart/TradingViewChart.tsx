@@ -51,15 +51,18 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, histor
       seriesRef.current = series;
       setChartReady(true);
 
-      const handleResize = () => {
-        if (chartContainerRef.current && chartRef.current) {
-          chartRef.current.applyOptions({ width: chartContainerRef.current.clientWidth });
+      const resizeObserver = new ResizeObserver(entries => {
+        if (entries.length === 0 || entries[0].target !== chartContainerRef.current) { return; }
+        const newRect = entries[0].contentRect;
+        if (chartRef.current && newRect.width > 0) {
+          chartRef.current.applyOptions({ width: newRect.width, height: newRect.height || 600 });
         }
-      };
-      window.addEventListener('resize', handleResize);
+      });
+      
+      resizeObserver.observe(chartContainerRef.current);
 
       return () => {
-        window.removeEventListener('resize', handleResize);
+        resizeObserver.disconnect();
         chart.remove();
         chartRef.current = null;
         seriesRef.current = null;
