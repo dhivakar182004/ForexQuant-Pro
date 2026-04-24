@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -28,8 +29,19 @@ public class WebSecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configure(http))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint((request, response, authException) -> {
+                    if (request.getRequestURI().startsWith("/api/")) {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                    } else {
+                        response.sendRedirect("/login");
+                    }
+                })
+            )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/login/**", "/oauth2/**", "/ws-forex/**", "/api/trades/**", "/api/market/**").permitAll()
+                .requestMatchers("/api/auth/**", "/api/market/**", "/ws-forex/**").permitAll()
+                .requestMatchers("/login/**", "/oauth2/**").permitAll()
+                .requestMatchers("/api/trades/**").authenticated()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
