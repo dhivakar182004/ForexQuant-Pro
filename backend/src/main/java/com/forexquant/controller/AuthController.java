@@ -53,7 +53,9 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        return userRepository.findByEmailOrPhoneNumber(loginRequest.getEmail(), loginRequest.getEmail()).map(user -> {
+        var userOpt = userRepository.findByEmailOrPhoneNumber(loginRequest.getEmail(), loginRequest.getEmail());
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
             if (user.getPassword() != null && user.getPassword().equals(loginRequest.getPassword())) {
                 boolean isFullyAuthenticated = !user.isTotpEnabled();
                 String jwt = jwtUtils.generateJwtTokenFromEmail(user.getEmail(), isFullyAuthenticated);
@@ -61,7 +63,8 @@ public class AuthController {
             } else {
                 return ResponseEntity.status(401).body(new MessageResponse("Error: Invalid password!"));
             }
-        }).orElse(ResponseEntity.status(404).body(new MessageResponse("Error: User not found!")));
+        }
+        return ResponseEntity.status(404).body(new MessageResponse("Error: User not found!"));
     }
 
     @PostMapping("/request-otp")
@@ -71,10 +74,12 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email or Phone is required"));
         }
         
-        return userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone).map(user -> {
+        var userOpt = userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone);
+        if (userOpt.isPresent()) {
             otpService.generateAndSendOtp(emailOrPhone);
             return ResponseEntity.ok(new MessageResponse("OTP sent successfully to " + emailOrPhone));
-        }).orElse(ResponseEntity.status(404).body(new MessageResponse("Error: User not found! Please register first.")));
+        }
+        return ResponseEntity.status(404).body(new MessageResponse("Error: User not found! Please register first."));
     }
 
     @PostMapping("/login-otp")
@@ -87,11 +92,12 @@ public class AuthController {
         }
         
         if (otpService.verifyOtp(emailOrPhone, otp)) {
-            return userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone).map(user -> {
-                // OTP Login counts as fully authenticated (bypasses TOTP if they had it enabled)
-                String jwt = jwtUtils.generateJwtTokenFromEmail(user.getEmail(), true);
+            var userOpt = userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone);
+            if (userOpt.isPresent()) {
+                String jwt = jwtUtils.generateJwtTokenFromEmail(userOpt.get().getEmail(), true);
                 return ResponseEntity.ok(Map.of("token", jwt, "requiresTotp", false));
-            }).orElse(ResponseEntity.status(404).body(new MessageResponse("Error: User not found!")));
+            }
+            return ResponseEntity.status(404).body(new MessageResponse("Error: User not found!"));
         } else {
             return ResponseEntity.status(401).body(new MessageResponse("Error: Invalid or expired OTP"));
         }
