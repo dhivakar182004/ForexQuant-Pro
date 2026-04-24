@@ -45,7 +45,8 @@ public class ForexDataService {
     @PostConstruct
     public void connectToExternalForexApi() {
         if (websocketUrl == null || websocketUrl.isBlank() || websocketUrl.contains("YOUR_FINNHUB_KEY")) {
-            System.err.println("No External API Key found. Skipping External API WebSocket connection. Please set forexquant.api.websocket.url");
+            System.out.println("No External API Key found. Starting Mock Data Simulator for EUR/USD...");
+            startMockDataSimulator();
             return;
         }
 
@@ -115,5 +116,22 @@ public class ForexDataService {
                 // Here we would call TradeService.executeTrade()
             }
         }
+    }
+
+    private void startMockDataSimulator() {
+        new Thread(() -> {
+            double currentPrice = 1.1050;
+            while (true) {
+                try {
+                    Thread.sleep(1500); // Simulate tick every 1.5 seconds
+                    currentPrice += (Math.random() - 0.5) * 0.0005;
+                    long timestamp = System.currentTimeMillis();
+                    processLiveTick("OANDA:EUR_USD", BigDecimal.valueOf(currentPrice), timestamp, 100 + Math.random() * 500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }).start();
     }
 }

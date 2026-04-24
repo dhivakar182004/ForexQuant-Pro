@@ -29,7 +29,7 @@ public class WebSecurityConfig {
             .cors(cors -> cors.configure(http))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/login/**", "/oauth2/**", "/ws-forex/**", "/api/trades/**").permitAll()
+                .requestMatchers("/api/auth/**", "/login/**", "/oauth2/**", "/ws-forex/**", "/api/trades/**", "/api/market/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
