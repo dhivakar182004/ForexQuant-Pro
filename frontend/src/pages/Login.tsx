@@ -16,6 +16,7 @@ export const Login = () => {
   const handleLogin = async () => {
     try {
       const res = await axios.post(`${API_BASE}/api/auth/signin`, { email, password });
+      localStorage.setItem('token', res.data.token);
       window.location.href = res.data.requiresTotp ? '/otp-verification' : '/dashboard';
     } catch(err) {
       alert("Invalid credentials! Please check your details.");
