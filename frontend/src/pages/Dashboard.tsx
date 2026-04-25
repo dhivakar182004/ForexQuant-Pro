@@ -114,7 +114,7 @@ export const Dashboard = () => {
                         <TradingViewChart mode={mode} historicalData={historicalData} onPriceUpdate={setCurrentPrice} />
                         
                         {/* Overlay Controls */}
-                        <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', z-index: 10 }}>
+                        <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
                             <div className="exness-card" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <span style={{ fontWeight: '600' }}>EURUSD</span>
                                 <span style={{ color: 'var(--success)' }}>{currentPrice.toFixed(5)}</span>
