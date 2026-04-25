@@ -20,31 +20,36 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, histor
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
+    console.log("Initializing chart in container:", chartContainerRef.current.clientWidth, chartContainerRef.current.clientHeight);
+
     const chart = createChart(chartContainerRef.current, {
-      width: chartContainerRef.current.clientWidth,
-      height: 500,
-      layout: { background: { color: 'transparent' }, textColor: '#d1d4dc' },
-      grid: { vertLines: { color: 'rgba(42, 46, 57, 0.5)' }, horzLines: { color: 'rgba(42, 46, 57, 0.5)' } },
+      width: chartContainerRef.current.clientWidth || 800,
+      height: chartContainerRef.current.clientHeight || 500,
+      layout: { background: { color: '#000000' }, textColor: '#d1d4dc' },
+      grid: { vertLines: { color: 'rgba(42, 46, 57, 0.2)' }, horzLines: { color: 'rgba(42, 46, 57, 0.2)' } },
       timeScale: { borderColor: 'rgba(197, 203, 206, 0.2)', timeVisible: true, secondsVisible: false },
     });
 
     const series = chart.addSeries(CandlestickSeries, {
-      upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
-      wickUpColor: '#26a69a', wickDownColor: '#ef5350'
+      upColor: '#00C853', downColor: '#FF3D00', borderVisible: false,
+      wickUpColor: '#00C853', wickDownColor: '#FF3D00'
     });
 
     chartRef.current = chart;
     seriesRef.current = series;
 
-    const handleResize = () => {
-      if (chartContainerRef.current && chartRef.current) {
-        chartRef.current.applyOptions({ width: chartContainerRef.current.clientWidth });
+    const resizeObserver = new ResizeObserver(entries => {
+      if (entries.length === 0 || !chartRef.current) return;
+      const { width, height } = entries[0].contentRect;
+      if (width > 0 && height > 0) {
+        chartRef.current.applyOptions({ width, height });
       }
-    };
-    window.addEventListener('resize', handleResize);
+    });
+    
+    resizeObserver.observe(chartContainerRef.current);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       chart.remove();
     };
   }, []);
@@ -139,7 +144,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, histor
           </div>
         </div>
       )}
-      <div ref={chartContainerRef} style={{ flex: 1, minHeight: '450px' }} />
+      <div ref={chartContainerRef} style={{ flex: 1, width: '100%', height: '100%', minHeight: '400px' }} />
     </div>
   );
 };
