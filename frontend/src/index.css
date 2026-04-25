@@ -155,7 +155,7 @@ body {
 /* Responsive Grid */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 280px 1fr 320px;
   gap: 1px;
   background: var(--border);
   height: calc(100vh - 60px);

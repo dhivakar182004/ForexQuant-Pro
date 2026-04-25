@@ -87,7 +87,7 @@ export const Dashboard = () => {
             
             <div className="dashboard-grid">
                 {/* Instruments Sidebar */}
-                <div className="grid-cell" style={{ borderRight: '1px solid var(--border)', width: '280px', display: 'flex', flexDirection: 'column' }}>
+                <div className="grid-cell" style={{ borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: '600', fontSize: '14px' }}>Instruments</span>
                         <span style={{ color: 'var(--exness-yellow)', fontSize: '12px', cursor: 'pointer' }}>Edit</span>
