@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TickerNav } from '../components/TickerNav';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
-  // OTP Login State
   const [isOtpMode, setIsOtpMode] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
@@ -44,54 +41,87 @@ export const Login = () => {
   };
 
   return (
-    <>
-      <TickerNav />
-      <div style={{ height: 'calc(100vh - 40px)', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundImage: 'url(/bull_bear_background.png)', backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: 'inset 0 0 0 2000px rgba(10, 14, 23, 0.85)' }}>
-        <div className="glass-panel" style={{ textAlign: 'center', padding: '50px 60px', width: '450px', background: 'rgba(20, 24, 35, 0.65)' }}>
-          <h2 className="gradient-text" style={{ fontSize: '36px', marginBottom: '10px' }}>ForexQuant Pro</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '35px', fontSize: '15px' }}>Institutional Grade Backtesting & Live Simulator</p>
+    <div style={{ minHeight: '100vh', background: '#000', display: 'flex', flexDirection: 'column' }}>
+      <div className="dynamic-bg"></div>
+      
+      {/* Header */}
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '32px', height: '32px', background: 'var(--exness-yellow)', borderRadius: '2px' }}></div>
+              <span style={{ fontWeight: '700', fontSize: '28px', letterSpacing: '-0.5px' }}>EXNESS</span>
+          </div>
+      </div>
+
+      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '100px' }}>
+        <div className="exness-card animate-up" style={{ width: '400px', padding: '40px' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '8px' }}>Sign in</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '32px' }}>Enter your credentials to continue to Terminal</p>
           
-          <div style={{ marginBottom: '25px', textAlign: 'left' }}>
-            <label style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>EMAIL OR PHONE NUMBER</label>
-            <input type="text" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email or +1 234..." style={{ width: '100%', marginBottom: '20px' }} disabled={otpSent} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <label style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>EMAIL OR PHONE</label>
+              <input 
+                type="text" 
+                value={email} 
+                onChange={e => setEmail(e.target.value)} 
+                placeholder="email@example.com" 
+                style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px' }} 
+                disabled={otpSent} 
+              />
+            </div>
             
             {!isOtpMode ? (
               <>
-                <label style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>SECURE PASSWORD</label>
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" style={{ width: '100%', marginBottom: '25px' }} />
-                <button onClick={handleLogin} className="btn btn-buy" style={{ width: '100%', fontSize: '16px' }}>Standard Sign In</button>
+                <div>
+                  <label style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>PASSWORD</label>
+                  <input 
+                    type="password" 
+                    value={password} 
+                    onChange={e => setPassword(e.target.value)} 
+                    placeholder="Enter password" 
+                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px' }} 
+                  />
+                </div>
+                <button onClick={handleLogin} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Continue</button>
               </>
             ) : (
               <>
                 {otpSent && (
-                  <>
-                    <label style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>6-DIGIT OTP CODE</label>
-                    <input type="text" value={otpCode} onChange={e => setOtpCode(e.target.value)} placeholder="000000" maxLength={6} style={{ width: '100%', marginBottom: '25px', textAlign: 'center', letterSpacing: '8px', fontSize: '20px', fontWeight: 'bold' }} />
-                  </>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>OTP CODE</label>
+                    <input 
+                      type="text" 
+                      value={otpCode} 
+                      onChange={e => setOtpCode(e.target.value)} 
+                      placeholder="000000" 
+                      maxLength={6} 
+                      style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', textAlign: 'center', letterSpacing: '4px', fontWeight: 'bold' }} 
+                    />
+                  </div>
                 )}
                 
                 {!otpSent ? (
-                  <button onClick={handleSendOtp} className="btn btn-buy" style={{ width: '100%', fontSize: '16px' }}>Send Login OTP</button>
+                  <button onClick={handleSendOtp} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Send Verification Code</button>
                 ) : (
-                  <button onClick={handleLoginOtp} className="btn btn-buy" style={{ width: '100%', fontSize: '16px' }}>Verify & Login</button>
+                  <button onClick={handleLoginOtp} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Verify and Continue</button>
                 )}
               </>
             )}
             
-            <div style={{ marginTop: '15px', textAlign: 'center' }}>
-              <button onClick={() => { setIsOtpMode(!isOtpMode); setOtpSent(false); setOtpCode(''); }} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '13px' }}>
-                {isOtpMode ? "Use Password Login Instead" : "Login with OTP (Passwordless)"}
-              </button>
-            </div>
+            <button 
+              onClick={() => { setIsOtpMode(!isOtpMode); setOtpSent(false); setOtpCode(''); }} 
+              style={{ background: 'none', border: 'none', color: 'var(--exness-yellow)', cursor: 'pointer', fontSize: '13px', fontWeight: '500', marginTop: '10px' }}
+            >
+              {isOtpMode ? "Sign in with password" : "Sign in with phone code"}
+            </button>
           </div>
           
-          <div style={{ marginTop: '20px', textAlign: 'center', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Don't have an account? <a href="/register" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 'bold' }}>Sign Up here</a>
-            </p>
+          <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--border)', textAlign: 'center' }}>
+            <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Not a member? </span>
+            <a href="/register" style={{ color: 'var(--exness-yellow)', textDecoration: 'none', fontSize: '14px', fontWeight: '600' }}>Create an account</a>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
