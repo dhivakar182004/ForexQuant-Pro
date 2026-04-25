@@ -32,14 +32,18 @@ public class WebSecurityConfig {
             .exceptionHandling(exception -> exception
                 .authenticationEntryPoint((request, response, authException) -> {
                     if (request.getRequestURI().startsWith("/api/")) {
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + authException.getMessage() + "\"}");
                     } else {
                         response.sendRedirect("/login");
                     }
                 })
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/market/**", "/ws-forex/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/market/**").permitAll()
+                .requestMatchers("/ws-forex/**").permitAll()
                 .requestMatchers("/login/**", "/oauth2/**").permitAll()
                 .requestMatchers("/api/trades/**").authenticated()
                 .anyRequest().authenticated()
