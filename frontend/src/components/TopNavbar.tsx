@@ -6,7 +6,7 @@ export const TopNavbar = () => {
             <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{ width: '24px', height: '24px', background: 'var(--exness-yellow)', borderRadius: '2px' }}></div>
-                    <span style={{ fontWeight: '700', fontSize: '20px', letterSpacing: '-0.5px' }}>EXNESS</span>
+                    <span style={{ fontWeight: '700', fontSize: '20px', letterSpacing: '-0.5px' }}>ForexQuant Pro</span>
                     <span style={{ color: 'var(--text-muted)', fontSize: '12px', marginLeft: '5px', fontWeight: '400' }}>TERMINAL</span>
                 </div>
                 

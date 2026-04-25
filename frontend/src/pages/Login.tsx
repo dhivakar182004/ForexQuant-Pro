@@ -48,7 +48,7 @@ export const Login = () => {
       <div style={{ padding: '40px', textAlign: 'center' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ width: '32px', height: '32px', background: 'var(--exness-yellow)', borderRadius: '2px' }}></div>
-              <span style={{ fontWeight: '700', fontSize: '28px', letterSpacing: '-0.5px' }}>EXNESS</span>
+              <span style={{ fontWeight: '700', fontSize: '28px', letterSpacing: '-0.5px' }}>ForexQuant Pro</span>
           </div>
       </div>
 
