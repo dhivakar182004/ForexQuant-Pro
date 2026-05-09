@@ -13,8 +13,6 @@ export const TopNavbar = () => {
                 <nav style={{ display: 'flex', gap: '24px', fontSize: '14px', fontWeight: '500' }}>
                     <a href="/dashboard" style={{ color: 'var(--exness-yellow)', textDecoration: 'none' }}>Trading</a>
                     <a href="/strategies" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Personal Area</a>
-                    <a href="/optimizer" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Analytics</a>
-                    <a href="/trade-history" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>History</a>
                 </nav>
             </div>
             

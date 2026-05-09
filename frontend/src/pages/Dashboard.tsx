@@ -34,80 +34,63 @@ export const Dashboard = () => {
     const [timeframe, setTimeframe] = useState<string>('15m');
 
     const [prices, setPrices] = useState<Record<string, { value: number, change: number, trend: 'up' | 'down' }>>({
-        'EURUSD': { value: 1.08425, change: 0.12, trend: 'up' },
-        'GBPUSD': { value: 1.26540, change: -0.05, trend: 'down' },
-        'USDJPY': { value: 150.320, change: 0.21, trend: 'up' },
-        'XAUUSD': { value: 2024.50, change: 0.45, trend: 'up' },
-        'BTCUSD': { value: 64320.00, change: -1.20, trend: 'down' }
+        'EURUSD': { value: 1.0850, change: 0.0, trend: 'up' },
+        'GBPUSD': { value: 1.2650, change: 0.0, trend: 'up' },
+        'USDJPY': { value: 150.30, change: 0.0, trend: 'up' },
+        'XAUUSD': { value: 2025.0, change: 0.0, trend: 'up' },
+        'BTCUSD': { value: 64300.0, change: 0.0, trend: 'up' }
     });
 
-    // Simulate Live Market Updates with Real Base Values
+    // Fetch Live Real-Time Market updates from Binance with today's live values
     useEffect(() => {
-        // Initial fetch for forex base (today's live value)
-        fetch('https://open.er-api.com/v6/latest/USD')
-            .then(r => r.json())
-            .then(data => {
-                setPrices(prev => ({
-                    ...prev,
-                    'EURUSD': { ...prev['EURUSD'], value: 1 / data.rates.EUR },
-                    'GBPUSD': { ...prev['GBPUSD'], value: 1 / data.rates.GBP },
-                    'USDJPY': { ...prev['USDJPY'], value: data.rates.JPY }
-                }));
-            })
-            .catch(() => console.error("Could not load real forex base rates"));
-
-        if (mode === 'live') {
-            const interval = setInterval(async () => {
-                let btcPrice = 0, xauPrice = 0;
-                let apiSuccess = false;
-                try {
-                    const [btcRes, paxgRes] = await Promise.all([
-                        fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'),
-                        fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT')
-                    ]);
-                    const btcData = await btcRes.json();
-                    const paxgData = await paxgRes.json();
-                    btcPrice = parseFloat(btcData.price);
-                    xauPrice = parseFloat(paxgData.price);
-                    apiSuccess = true;
-                } catch(e) { apiSuccess = false; }
+        const fetchAllLivePrices = async () => {
+            try {
+                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["EURUSDT","GBPUSDT","USDTJPY","BTCUSDT","PAXGUSDT"]');
+                const data = await res.json();
+                
+                const getPrice = (symbol: string) => {
+                    const item = data.find((d: any) => d.symbol === symbol);
+                    return item ? parseFloat(item.price) : 0;
+                };
 
                 setPrices(prev => {
                     const next: Record<string, { value: number, change: number, trend: 'up' | 'down' }> = {};
-                    
-                    ['EURUSD', 'GBPUSD', 'USDJPY'].forEach(k => {
-                        const maxFluctuation = k === 'USDJPY' ? 0.01 : 0.00005;
-                        const fluctuation = (Math.random() - 0.5) * maxFluctuation;
-                        const newValue = prev[k].value + fluctuation;
-                        const isUp = fluctuation >= 0;
-                        next[k] = {
-                            value: newValue,
-                            change: prev[k].change + (isUp ? 0.01 : -0.01),
-                            trend: isUp ? 'up' : 'down'
-                        };
-                    });
+                    const mappings = {
+                        'EURUSD': 'EURUSDT',
+                        'GBPUSD': 'GBPUSDT',
+                        'USDJPY': 'USDTJPY',
+                        'XAUUSD': 'PAXGUSDT',
+                        'BTCUSD': 'BTCUSDT'
+                    };
 
-                    if (apiSuccess) {
-                        const btcTrend = btcPrice >= prev['BTCUSD'].value ? 'up' : 'down';
-                        next['BTCUSD'] = { value: btcPrice, change: prev['BTCUSD'].change + (btcTrend === 'up' ? 0.05 : -0.05), trend: btcTrend };
-                        
-                        const xauTrend = xauPrice >= prev['XAUUSD'].value ? 'up' : 'down';
-                        next['XAUUSD'] = { value: xauPrice, change: prev['XAUUSD'].change + (xauTrend === 'up' ? 0.02 : -0.02), trend: xauTrend };
-                    } else {
-                        // Fallback if Binance is blocked
-                        ['BTCUSD', 'XAUUSD'].forEach(k => {
-                            const maxFluctuation = k === 'BTCUSD' ? 10 : 0.5;
-                            const fluctuation = (Math.random() - 0.5) * maxFluctuation;
-                            next[k] = {
-                                value: prev[k].value + fluctuation,
-                                change: prev[k].change + (fluctuation >= 0 ? 0.05 : -0.05),
-                                trend: fluctuation >= 0 ? 'up' : 'down'
+                    Object.keys(mappings).forEach(key => {
+                        const binanceSym = (mappings as any)[key];
+                        const val = getPrice(binanceSym);
+                        if (val > 0) {
+                            const prevVal = prev[key].value;
+                            const trend = val >= prevVal ? 'up' : 'down';
+                            const percentChange = prevVal > 0 ? ((val - prevVal) / prevVal) * 100 : 0;
+                            next[key] = {
+                                value: val,
+                                change: percentChange !== 0 ? percentChange : prev[key].change,
+                                trend: trend as any
                             };
-                        });
-                    }
+                        } else {
+                            next[key] = prev[key];
+                        }
+                    });
                     return next;
                 });
-            }, 2000);
+            } catch (e) {
+                console.error("Could not load real-time baseline prices", e);
+            }
+        };
+
+        // Initial load
+        fetchAllLivePrices();
+
+        if (mode === 'live') {
+            const interval = setInterval(fetchAllLivePrices, 2000);
             return () => clearInterval(interval);
         }
     }, [mode]);
@@ -152,33 +135,69 @@ export const Dashboard = () => {
     const fetchHistory = async (customStart?: string, customTimeframe?: string) => {
         try {
             const tf = customTimeframe || timeframe;
-            const start = customStart ? new Date(customStart).toISOString() : new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-            const end = new Date().toISOString();
-            const formattedSymbol = currentSymbol === 'EURUSD' ? 'OANDA:EUR_USD' : currentSymbol;
             
+            const getBinanceSymbol = (sym: string) => {
+                switch (sym) {
+                    case 'EURUSD': return 'EURUSDT';
+                    case 'GBPUSD': return 'GBPUSDT';
+                    case 'USDJPY': return 'USDTJPY';
+                    case 'XAUUSD': return 'PAXGUSDT';
+                    case 'BTCUSD': return 'BTCUSDT';
+                    default: return 'BTCUSDT';
+                }
+            };
+
+            const getBinanceInterval = (tframe: string) => {
+                switch (tframe) {
+                    case '1m': return '1m';
+                    case '5m': return '5m';
+                    case '15m': return '15m';
+                    case '1H': return '1h';
+                    case '4H': return '4h';
+                    case '1D': return '1d';
+                    default: return '15m';
+                }
+            };
+
+            const binanceSymbol = getBinanceSymbol(currentSymbol);
+            const binanceInterval = getBinanceInterval(tf);
+            const startTimeMs = customStart ? new Date(customStart).getTime() : undefined;
+
+            let url = `https://api.binance.com/api/v3/klines?symbol=${binanceSymbol}&interval=${binanceInterval}&limit=500`;
+            if (startTimeMs) {
+                url += `&startTime=${startTimeMs}`;
+            }
+
             let fetchedData: any[] = [];
             try {
-                const res = await axios.get(`${API_BASE}/api/market/history?symbol=${formattedSymbol}&start=${start}&end=${end}&timeframe=${tf}`);
-                if (res.data && res.data.length > 0) fetchedData = res.data;
+                const res = await axios.get(url);
+                if (res.data && res.data.length > 0) {
+                    fetchedData = res.data.map((k: any) => ({
+                        time: Math.floor(k[0] / 1000),
+                        open: Number(parseFloat(k[1])),
+                        high: Number(parseFloat(k[2])),
+                        low: Number(parseFloat(k[3])),
+                        close: Number(parseFloat(k[4]))
+                    }));
+                }
             } catch (err) {
-                console.warn("Backend API failed or empty, generating fallback replay data.");
+                console.warn("Binance API failed or rate-limited, falling back to local simulation.", err);
             }
 
             if (fetchedData.length > 0) {
                 const uniqueData = [];
                 const seenTimes = new Set();
                 for (let c of fetchedData) {
-                    const t = Math.floor(new Date(c.timestamp).getTime() / 1000);
-                    if (!seenTimes.has(t)) {
-                        seenTimes.add(t);
-                        uniqueData.push({
-                            time: t,
-                            open: c.open, high: c.high, low: c.low, close: c.close
-                        });
+                    if (!seenTimes.has(c.time)) {
+                        seenTimes.add(c.time);
+                        uniqueData.push(c);
                     }
                 }
                 uniqueData.sort((a, b) => a.time - b.time);
                 setHistoricalData(uniqueData);
+                if (uniqueData.length > 0) {
+                    setCurrentPrice(uniqueData[uniqueData.length - 1].close);
+                }
             } else {
                 // Generate realistic mock history so Replay ALWAYS works
                 const mockData = [];
@@ -210,6 +229,9 @@ export const Dashboard = () => {
                     basePrice = close;
                 }
                 setHistoricalData(mockData);
+                if (mockData.length > 0) {
+                    setCurrentPrice(mockData[mockData.length - 1].close);
+                }
             }
         } catch(e) { console.error("Could not fetch historical data"); }
     };
