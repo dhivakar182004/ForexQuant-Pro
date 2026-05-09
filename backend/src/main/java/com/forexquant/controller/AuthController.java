@@ -76,8 +76,11 @@ public class AuthController {
         
         var userOpt = userRepository.findByEmailOrPhoneNumber(emailOrPhone, emailOrPhone);
         if (userOpt.isPresent()) {
-            otpService.generateAndSendOtp(emailOrPhone);
-            return ResponseEntity.ok(new MessageResponse("OTP sent successfully to " + emailOrPhone));
+            String otp = otpService.generateAndSendOtp(emailOrPhone);
+            return ResponseEntity.ok(Map.of(
+                "message", "OTP sent successfully to " + emailOrPhone,
+                "devOtp", otp
+            ));
         }
         return ResponseEntity.status(404).body(new MessageResponse("Error: User not found! Please register first."));
     }

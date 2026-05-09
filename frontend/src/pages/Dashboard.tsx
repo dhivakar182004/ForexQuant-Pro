@@ -111,7 +111,13 @@ export const Dashboard = () => {
                 {/* Main Trading Area */}
                 <div style={{ display: 'grid', gridTemplateRows: '1fr 200px', flex: 1, overflow: 'hidden' }}>
                     <div className="grid-cell" style={{ position: 'relative', padding: 0 }}>
-                        <TradingViewChart mode={mode} historicalData={historicalData} onPriceUpdate={setCurrentPrice} />
+                        <TradingViewChart 
+                            mode={mode} 
+                            historicalData={historicalData} 
+                            onPriceUpdate={setCurrentPrice}
+                            isReplaying={isReplaying}
+                            replaySpeed={replaySpeed}
+                        />
                         
                         {/* Overlay Controls */}
                         <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
@@ -119,6 +125,19 @@ export const Dashboard = () => {
                                 <span style={{ fontWeight: '600' }}>EURUSD</span>
                                 <span style={{ color: 'var(--success)' }}>{currentPrice.toFixed(5)}</span>
                             </div>
+                            <button onClick={() => setMode(mode === 'live' ? 'replay' : 'live')} className="btn-exness" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)' }}>
+                                {mode === 'live' ? 'Enter Replay' : 'Exit Replay'}
+                            </button>
+                            {mode === 'replay' && (
+                                <ReplayToolbar 
+                                    isPlaying={isReplaying}
+                                    onTogglePlay={() => setIsReplaying(!isReplaying)}
+                                    onRewind={() => {}} 
+                                    onForward={() => {}} 
+                                    speed={replaySpeed}
+                                    onSpeedChange={setReplaySpeed}
+                                />
+                            )}
                         </div>
                     </div>
 
@@ -130,48 +149,6 @@ export const Dashboard = () => {
                         </div>
                         <div style={{ padding: '16px' }}>
                             <RiskDashboard trades={trades} onCloseTrade={closeTrade} />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Side Trade Panel */}
-                <div className="grid-cell" style={{ borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    <div>
-                        <div style={{ display: 'flex', borderRadius: '4px', background: '#1a1a1a', padding: '2px', marginBottom: '20px' }}>
-                            <button className="btn-exness" style={{ flex: 1, background: 'transparent', color: '#fff' }}>Market</button>
-                            <button className="btn-exness" style={{ flex: 1, background: 'transparent', color: 'var(--text-muted)' }}>Pending</button>
-                        </div>
-
-                        <div style={{ marginBottom: '20px' }}>
-                            <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>LOT SIZE</label>
-                            <input 
-                                type="number" 
-                                value={positionSize} 
-                                onChange={e => setPositionSize(Number(e.target.value))}
-                                style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px' }}
-                            />
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '1px', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
-                            <button className="trade-btn trade-btn-sell" onClick={() => executeTrade('SELL')}>
-                                <span style={{ fontSize: '12px', marginBottom: '4px' }}>Sell</span>
-                                <span style={{ fontSize: '18px', fontWeight: '700' }}>{(currentPrice - 0.00002).toFixed(5)}</span>
-                            </button>
-                            <button className="trade-btn trade-btn-buy" onClick={() => executeTrade('BUY')}>
-                                <span style={{ fontSize: '12px', marginBottom: '4px' }}>Buy</span>
-                                <span style={{ fontSize: '18px', fontWeight: '700' }}>{(currentPrice + 0.00002).toFixed(5)}</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div style={{ marginTop: 'auto', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Margin</span>
-                            <span style={{ fontSize: '12px' }}>42.12 USD</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Free Margin</span>
-                            <span style={{ fontSize: '12px' }}>99,957.88 USD</span>
                         </div>
                     </div>
                 </div>

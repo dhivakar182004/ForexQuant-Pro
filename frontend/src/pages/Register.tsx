@@ -48,7 +48,7 @@ export const Register = () => {
                     value={formData.email} 
                     onChange={e => setFormData({...formData, email: e.target.value})} 
                     placeholder="email@example.com" 
-                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px' }} 
+                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', color: '#fff' }} 
                   />
                 </div>
                 
@@ -59,7 +59,7 @@ export const Register = () => {
                     value={formData.phoneNumber} 
                     onChange={e => setFormData({...formData, phoneNumber: e.target.value})} 
                     placeholder="+1 234 567 8900" 
-                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px' }} 
+                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', color: '#fff' }} 
                   />
                 </div>
 
@@ -69,8 +69,9 @@ export const Register = () => {
                     type="password" 
                     value={formData.password} 
                     onChange={e => setFormData({...formData, password: e.target.value})} 
-                    placeholder="Create password" 
-                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px' }} 
+                    placeholder="Create password"
+                    maxLength={8}
+                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', color: '#fff' }} 
                   />
                 </div>
 
@@ -80,8 +81,9 @@ export const Register = () => {
                     type="password" 
                     value={formData.confirmPassword} 
                     onChange={e => setFormData({...formData, confirmPassword: e.target.value})} 
-                    placeholder="Confirm password" 
-                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px' }} 
+                    placeholder="Confirm password"
+                    maxLength={8}
+                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', color: '#fff' }} 
                   />
                 </div>
 

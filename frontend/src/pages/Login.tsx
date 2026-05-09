@@ -22,9 +22,13 @@ export const Login = () => {
 
   const handleSendOtp = async () => {
     try {
-      await axios.post(`${API_BASE}/api/auth/request-otp`, { emailOrPhone: email });
+      const res = await axios.post(`${API_BASE}/api/auth/request-otp`, { emailOrPhone: email });
       setOtpSent(true);
-      alert("OTP Sent! Check your phone/email.");
+      if (res.data.devOtp) {
+          alert(`[DEV] OTP Sent! Your code is: ${res.data.devOtp}`);
+      } else {
+          alert("OTP Sent! Check your phone/email.");
+      }
     } catch(err) {
       alert("Could not send OTP. Make sure you are registered.");
     }
@@ -59,13 +63,15 @@ export const Login = () => {
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div>
-              <label style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>EMAIL OR PHONE</label>
+              <label style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+                {isOtpMode ? "PHONE NUMBER OR EMAIL" : "EMAIL OR PHONE"}
+              </label>
               <input 
                 type="text" 
                 value={email} 
                 onChange={e => setEmail(e.target.value)} 
-                placeholder="email@example.com" 
-                style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px' }} 
+                placeholder={isOtpMode ? "+1 234 567 8900" : "email@example.com"} 
+                style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', color: '#fff' }} 
                 disabled={otpSent} 
               />
             </div>
@@ -78,8 +84,9 @@ export const Login = () => {
                     type="password" 
                     value={password} 
                     onChange={e => setPassword(e.target.value)} 
-                    placeholder="Enter password" 
-                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px' }} 
+                    placeholder="Enter password"
+                    maxLength={8}
+                    style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', color: '#fff' }} 
                   />
                 </div>
                 <button onClick={handleLogin} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Continue</button>
@@ -95,7 +102,7 @@ export const Login = () => {
                       onChange={e => setOtpCode(e.target.value)} 
                       placeholder="000000" 
                       maxLength={6} 
-                      style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', textAlign: 'center', letterSpacing: '4px', fontWeight: 'bold' }} 
+                      style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', textAlign: 'center', letterSpacing: '4px', fontWeight: 'bold', color: '#fff' }} 
                     />
                   </div>
                 )}
