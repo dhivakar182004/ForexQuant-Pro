@@ -24,6 +24,7 @@ export const Dashboard = () => {
     const [positionSize, setPositionSize] = useState<number>(100000);
     const [trades, setTrades] = useState<any[]>([]);
     const [currentPrice, setCurrentPrice] = useState<number>(1.10000);
+    const [currentSymbol, setCurrentSymbol] = useState('EURUSD');
     const [isReplaying, setIsReplaying] = useState(false);
     const [replaySpeed, setReplaySpeed] = useState(1);
     const [replayIndex, setReplayIndex] = useState(50);
@@ -99,7 +100,8 @@ export const Dashboard = () => {
         try {
             const start = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
             const end = new Date().toISOString();
-            const res = await axios.get(`${API_BASE}/api/market/history?symbol=OANDA:EUR_USD&start=${start}&end=${end}`);
+            const formattedSymbol = currentSymbol === 'EURUSD' ? 'OANDA:EUR_USD' : currentSymbol;
+            const res = await axios.get(`${API_BASE}/api/market/history?symbol=${formattedSymbol}&start=${start}&end=${end}`);
             
             if (res.data && res.data.length > 0) {
                 const formatted = res.data.map((c: any) => ({
@@ -149,9 +151,12 @@ export const Dashboard = () => {
                             const sign = isUp ? '+' : '';
                             const decimals = symbol.includes('JPY') ? 3 : symbol.includes('USD') && symbol !== 'XAUUSD' && symbol !== 'BTCUSD' ? 5 : 2;
                             return (
-                                <div key={symbol} className="exness-card" style={{ padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: symbol === 'EURUSD' ? 'var(--bg-hover)' : 'transparent' }}>
+                                <div key={symbol} 
+                                     onClick={() => { setCurrentSymbol(symbol); setCurrentPrice(prices[symbol].value); }}
+                                     className="exness-card" 
+                                     style={{ padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: symbol === currentSymbol ? 'var(--bg-hover)' : 'transparent', borderLeft: symbol === currentSymbol ? '3px solid var(--exness-yellow)' : '1px solid var(--border)' }}>
                                     <div>
-                                        <div style={{ fontSize: '13px', fontWeight: '600' }}>{symbol}</div>
+                                        <div style={{ fontSize: '13px', fontWeight: '600', color: symbol === currentSymbol ? 'var(--exness-yellow)' : 'var(--text-main)' }}>{symbol}</div>
                                         <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Forex • Live</div>
                                     </div>
                                     <div style={{ textAlign: 'right' }}>
@@ -176,6 +181,7 @@ export const Dashboard = () => {
                 }>
                     <div className="grid-cell" style={{ position: 'relative', padding: 0, flex: isFullscreen ? 1 : undefined }}>
                         <TradingViewChart 
+                            symbol={currentSymbol}
                             mode={mode} 
                             historicalData={historicalData} 
                             onPriceUpdate={setCurrentPrice}
@@ -185,8 +191,8 @@ export const Dashboard = () => {
                         {/* Overlay Controls */}
                         <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
                             <div className="exness-card" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <span style={{ fontWeight: '600' }}>EURUSD</span>
-                                <span style={{ color: 'var(--success)' }}>{currentPrice.toFixed(5)}</span>
+                                <span style={{ fontWeight: '600' }}>{currentSymbol}</span>
+                                <span style={{ color: 'var(--success)' }}>{currentPrice.toFixed(currentSymbol.includes('JPY') ? 3 : 5)}</span>
                             </div>
                             
                             {mode === 'live' ? (

@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createChart } from 'lightweight-charts';
 
 interface TradingViewChartProps {
+  symbol: string;
   mode: 'live' | 'replay';
   historicalData?: any[];
   onPriceUpdate?: (price: number) => void;
   replayIndex?: number;
 }
 
-export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, historicalData, onPriceUpdate, replayIndex }) => {
+export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, mode, historicalData, onPriceUpdate, replayIndex }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
@@ -27,7 +28,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, histor
         if ((window as any).TradingView) {
           new (window as any).TradingView.widget({
             "autosize": true,
-            "symbol": "FX:EURUSD",
+            "symbol": symbol === 'BTCUSD' ? 'BINANCE:BTCUSD' : `FX:${symbol}`,
             "interval": "15",
             "timezone": "Etc/UTC",
             "theme": "dark",
@@ -86,7 +87,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, histor
         chart.remove();
       };
     }
-  }, [mode, historicalData]);
+  }, [mode, symbol, historicalData]);
 
   // Handle Replay Playback externally via replayIndex
   useEffect(() => {
