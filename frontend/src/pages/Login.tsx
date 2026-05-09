@@ -84,7 +84,10 @@ export const Login = () => {
             {!isOtpMode ? (
               <>
                 <div>
-                  <label style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>PASSWORD</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>PASSWORD</label>
+                    <a href="/forgot-password" style={{ color: 'var(--text-muted)', fontSize: '11px', textDecoration: 'none' }}>Forgot password?</a>
+                  </div>
                   <input 
                     type="password" 
                     value={password} 
