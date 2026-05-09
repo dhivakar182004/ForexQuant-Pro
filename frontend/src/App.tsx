@@ -9,7 +9,6 @@ import { TradeHistory } from './pages/TradeHistory';
 import { RiskTools } from './pages/RiskTools';
 import { Strategies } from './pages/Strategies';
 import { Optimizer } from './pages/Optimizer';
-import { TickerNav } from './components/TickerNav';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('token');
@@ -27,11 +26,11 @@ export default function App() {
         
         {/* Protected Routes */}
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/analytics" element={<ProtectedRoute><><TickerNav /><Analytics /></></ProtectedRoute>} />
-        <Route path="/trade-history" element={<ProtectedRoute><><TickerNav /><TradeHistory /></></ProtectedRoute>} />
-        <Route path="/risk-tools" element={<ProtectedRoute><><TickerNav /><RiskTools /></></ProtectedRoute>} />
-        <Route path="/strategies" element={<ProtectedRoute><><TickerNav /><Strategies /></></ProtectedRoute>} />
-        <Route path="/optimizer" element={<ProtectedRoute><><TickerNav /><Optimizer /></></ProtectedRoute>} />
+        <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+        <Route path="/trade-history" element={<ProtectedRoute><TradeHistory /></ProtectedRoute>} />
+        <Route path="/risk-tools" element={<ProtectedRoute><RiskTools /></ProtectedRoute>} />
+        <Route path="/strategies" element={<ProtectedRoute><Strategies /></ProtectedRoute>} />
+        <Route path="/optimizer" element={<ProtectedRoute><Optimizer /></ProtectedRoute>} />
         
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

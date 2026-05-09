@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { TradingViewChart } from '../components/chart/TradingViewChart';
 import { RiskDashboard } from '../components/dashboard/RiskDashboard';
-import { TickerNav } from '../components/TickerNav';
 import { TopNavbar } from '../components/TopNavbar';
 import { ReplayToolbar } from '../components/terminal/ReplayToolbar';
 import { Maximize, Minimize, Play } from 'lucide-react';
@@ -29,6 +28,38 @@ export const Dashboard = () => {
     const [replaySpeed, setReplaySpeed] = useState(1);
     const [replayIndex, setReplayIndex] = useState(50);
     const [isFullscreen, setIsFullscreen] = useState(false);
+
+    const [prices, setPrices] = useState<Record<string, { value: number, change: number, trend: 'up' | 'down' }>>({
+        'EURUSD': { value: 1.08425, change: 0.12, trend: 'up' },
+        'GBPUSD': { value: 1.26540, change: -0.05, trend: 'down' },
+        'USDJPY': { value: 150.320, change: 0.21, trend: 'up' },
+        'XAUUSD': { value: 2024.50, change: 0.45, trend: 'up' },
+        'BTCUSD': { value: 64320.00, change: -1.20, trend: 'down' }
+    });
+
+    // Simulate Live Market Updates
+    useEffect(() => {
+        if (mode === 'live') {
+            const interval = setInterval(() => {
+                setPrices(prev => {
+                    const next: Record<string, { value: number, change: number, trend: 'up' | 'down' }> = {};
+                    Object.keys(prev).forEach(k => {
+                        const maxFluctuation = k === 'BTCUSD' ? 50 : k === 'XAUUSD' ? 2 : 0.0005;
+                        const fluctuation = (Math.random() - 0.5) * maxFluctuation;
+                        const newValue = Math.max(0, prev[k].value + fluctuation);
+                        const isUp = fluctuation >= 0;
+                        next[k] = {
+                            value: newValue,
+                            change: prev[k].change + (isUp ? 0.01 : -0.01),
+                            trend: isUp ? 'up' : 'down'
+                        };
+                    });
+                    return next;
+                });
+            }, 2000);
+            return () => clearInterval(interval);
+        }
+    }, [mode]);
 
     // Main Replay Loop
     useEffect(() => {
@@ -111,18 +142,29 @@ export const Dashboard = () => {
                         <span style={{ color: 'var(--exness-yellow)', fontSize: '12px', cursor: 'pointer' }}>Edit</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
-                        {['EURUSD', 'GBPUSD', 'USDJPY', 'XAUUSD', 'BTCUSD'].map(symbol => (
-                            <div key={symbol} className="exness-card" style={{ padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: symbol === 'EURUSD' ? 'var(--bg-hover)' : 'transparent' }}>
-                                <div>
-                                    <div style={{ fontSize: '13px', fontWeight: '600' }}>{symbol}</div>
-                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Forex • 15m</div>
+                        {Object.keys(prices).map(symbol => {
+                            const data = prices[symbol];
+                            const isUp = data.trend === 'up';
+                            const color = isUp ? 'var(--success)' : 'var(--danger)';
+                            const sign = isUp ? '+' : '';
+                            const decimals = symbol.includes('JPY') ? 3 : symbol.includes('USD') && symbol !== 'XAUUSD' && symbol !== 'BTCUSD' ? 5 : 2;
+                            return (
+                                <div key={symbol} className="exness-card" style={{ padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: symbol === 'EURUSD' ? 'var(--bg-hover)' : 'transparent' }}>
+                                    <div>
+                                        <div style={{ fontSize: '13px', fontWeight: '600' }}>{symbol}</div>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Forex • Live</div>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div style={{ fontSize: '13px', fontWeight: '600', color: color, transition: 'color 0.3s' }}>
+                                            {data.value.toFixed(decimals)}
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: color }}>
+                                            {sign}{data.change.toFixed(2)}%
+                                        </div>
+                                    </div>
                                 </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--success)' }}>1.08425</div>
-                                    <div style={{ fontSize: '11px', color: 'var(--success)' }}>+0.12%</div>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
 
