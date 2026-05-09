@@ -159,11 +159,20 @@ export const Dashboard = () => {
             }
 
             if (fetchedData.length > 0) {
-                const formatted = fetchedData.map((c: any) => ({
-                    time: Math.floor(new Date(c.timestamp).getTime() / 1000),
-                    open: c.open, high: c.high, low: c.low, close: c.close
-                }));
-                setHistoricalData(formatted);
+                const uniqueData = [];
+                const seenTimes = new Set();
+                for (let c of fetchedData) {
+                    const t = Math.floor(new Date(c.timestamp).getTime() / 1000);
+                    if (!seenTimes.has(t)) {
+                        seenTimes.add(t);
+                        uniqueData.push({
+                            time: t,
+                            open: c.open, high: c.high, low: c.low, close: c.close
+                        });
+                    }
+                }
+                uniqueData.sort((a, b) => a.time - b.time);
+                setHistoricalData(uniqueData);
             } else {
                 // Generate realistic mock history so Replay ALWAYS works
                 const mockData = [];
@@ -255,9 +264,9 @@ export const Dashboard = () => {
                 <div style={
                     isFullscreen ? {
                         position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, background: '#000', display: 'flex', flexDirection: 'column'
-                    } : { display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }
+                    } : { display: 'flex', flexDirection: 'column', flex: 1, minHeight: '600px', overflow: 'hidden' }
                 }>
-                    <div className="grid-cell" style={{ position: 'relative', padding: 0, flex: isFullscreen ? 1 : undefined }}>
+                    <div className="grid-cell" style={{ position: 'relative', padding: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <TradingViewChart 
                             symbol={currentSymbol}
                             mode={mode} 
