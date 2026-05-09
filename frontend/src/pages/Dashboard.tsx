@@ -30,6 +30,8 @@ export const Dashboard = () => {
     const [replayIndex, setReplayIndex] = useState(50);
     const [replayStartDate, setReplayStartDate] = useState(() => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [activeIndicators, setActiveIndicators] = useState<string[]>([]);
+    const [timeframe, setTimeframe] = useState<string>('15m');
 
     const [prices, setPrices] = useState<Record<string, { value: number, change: number, trend: 'up' | 'down' }>>({
         'EURUSD': { value: 1.08425, change: 0.12, trend: 'up' },
@@ -126,7 +128,6 @@ export const Dashboard = () => {
     }, [mode, isReplaying, replaySpeed, historicalData]);
 
     useEffect(() => {
-        fetchHistory(); // Fetch historical data immediately so the live chart is not blank
         const queryParams = new URLSearchParams(window.location.search);
         const token = queryParams.get('token');
         if (token) {
@@ -144,15 +145,20 @@ export const Dashboard = () => {
           .catch(err => console.error("Could not fetch trades", err));
     }, []);
 
-    const fetchHistory = async (customStart?: string) => {
+    useEffect(() => {
+        fetchHistory(replayStartDate, timeframe);
+    }, [currentSymbol, timeframe, replayStartDate]);
+
+    const fetchHistory = async (customStart?: string, customTimeframe?: string) => {
         try {
+            const tf = customTimeframe || timeframe;
             const start = customStart ? new Date(customStart).toISOString() : new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
             const end = new Date().toISOString();
             const formattedSymbol = currentSymbol === 'EURUSD' ? 'OANDA:EUR_USD' : currentSymbol;
             
             let fetchedData: any[] = [];
             try {
-                const res = await axios.get(`${API_BASE}/api/market/history?symbol=${formattedSymbol}&start=${start}&end=${end}`);
+                const res = await axios.get(`${API_BASE}/api/market/history?symbol=${formattedSymbol}&start=${start}&end=${end}&timeframe=${tf}`);
                 if (res.data && res.data.length > 0) fetchedData = res.data;
             } catch (err) {
                 console.warn("Backend API failed or empty, generating fallback replay data.");
@@ -179,6 +185,14 @@ export const Dashboard = () => {
                 let basePrice = currentPrice || 1.1000;
                 let startTime = customStart ? new Date(customStart).getTime() / 1000 : Date.now() / 1000 - (500 * 15 * 60);
                 
+                let stepSeconds = 15 * 60; // default 15m
+                if (tf === '1m') stepSeconds = 60;
+                else if (tf === '5m') stepSeconds = 5 * 60;
+                else if (tf === '15m') stepSeconds = 15 * 60;
+                else if (tf === '1H') stepSeconds = 60 * 60;
+                else if (tf === '4H') stepSeconds = 4 * 60 * 60;
+                else if (tf === '1D') stepSeconds = 24 * 60 * 60;
+
                 for (let i = 0; i < 500; i++) {
                     const volatility = currentSymbol.includes('BTC') ? 50 : currentSymbol.includes('XAU') ? 2 : 0.002;
                     const open = basePrice;
@@ -187,7 +201,7 @@ export const Dashboard = () => {
                     const low = Math.min(open, close) - Math.random() * (volatility / 2);
                     
                     mockData.push({
-                        time: Math.floor(startTime + (i * 15 * 60)), // 15 min increments
+                        time: Math.floor(startTime + (i * stepSeconds)), // dynamic increments
                         open: Number(open.toFixed(5)), 
                         high: Number(high.toFixed(5)), 
                         low: Number(low.toFixed(5)), 
@@ -274,6 +288,7 @@ export const Dashboard = () => {
                             onPriceUpdate={setCurrentPrice}
                             replayIndex={replayIndex}
                             livePrice={currentPrice}
+                            activeIndicators={activeIndicators}
                         />
                         
                         {/* Top Left Overlay Controls */}
@@ -281,6 +296,33 @@ export const Dashboard = () => {
                             <div className="exness-card" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <span style={{ fontWeight: '600' }}>{currentSymbol}</span>
                                 <span style={{ color: 'var(--success)' }}>{currentPrice.toFixed(currentSymbol.includes('JPY') ? 3 : 5)}</span>
+                            </div>
+                            
+                            {/* Indicator Toggles */}
+                            <div className="exness-card" style={{ padding: '4px', background: 'rgba(0,0,0,0.8)', display: 'flex', gap: '4px' }}>
+                                <button 
+                                    onClick={() => setActiveIndicators(prev => prev.includes('SMA20') ? prev.filter(i => i !== 'SMA20') : [...prev, 'SMA20'])}
+                                    style={{ background: activeIndicators.includes('SMA20') ? 'var(--exness-yellow)' : 'transparent', color: activeIndicators.includes('SMA20') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
+                                    SMA 20
+                                </button>
+                                <button 
+                                    onClick={() => setActiveIndicators(prev => prev.includes('SMA50') ? prev.filter(i => i !== 'SMA50') : [...prev, 'SMA50'])}
+                                    style={{ background: activeIndicators.includes('SMA50') ? 'var(--exness-yellow)' : 'transparent', color: activeIndicators.includes('SMA50') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
+                                    SMA 50
+                                </button>
+                            </div>
+
+                            {/* Timeframe Toggles */}
+                            <div className="exness-card" style={{ padding: '4px', background: 'rgba(0,0,0,0.8)', display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                <span style={{ fontSize: '10px', color: '#888', padding: '0 4px', fontWeight: 'bold' }}>TF</span>
+                                {['1m', '5m', '15m', '1H', '1D'].map(tf => (
+                                    <button 
+                                        key={tf}
+                                        onClick={() => setTimeframe(tf)}
+                                        style={{ background: timeframe === tf ? 'var(--exness-yellow)' : 'transparent', color: timeframe === tf ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
+                                        {tf}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
