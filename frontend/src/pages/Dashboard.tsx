@@ -38,16 +38,44 @@ export const Dashboard = () => {
         'BTCUSD': { value: 64320.00, change: -1.20, trend: 'down' }
     });
 
-    // Simulate Live Market Updates
+    // Simulate Live Market Updates with Real Base Values
     useEffect(() => {
+        // Initial fetch for forex base (today's live value)
+        fetch('https://open.er-api.com/v6/latest/USD')
+            .then(r => r.json())
+            .then(data => {
+                setPrices(prev => ({
+                    ...prev,
+                    'EURUSD': { ...prev['EURUSD'], value: 1 / data.rates.EUR },
+                    'GBPUSD': { ...prev['GBPUSD'], value: 1 / data.rates.GBP },
+                    'USDJPY': { ...prev['USDJPY'], value: data.rates.JPY }
+                }));
+            })
+            .catch(() => console.error("Could not load real forex base rates"));
+
         if (mode === 'live') {
-            const interval = setInterval(() => {
+            const interval = setInterval(async () => {
+                let btcPrice = 0, xauPrice = 0;
+                let apiSuccess = false;
+                try {
+                    const [btcRes, paxgRes] = await Promise.all([
+                        fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'),
+                        fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT')
+                    ]);
+                    const btcData = await btcRes.json();
+                    const paxgData = await paxgRes.json();
+                    btcPrice = parseFloat(btcData.price);
+                    xauPrice = parseFloat(paxgData.price);
+                    apiSuccess = true;
+                } catch(e) { apiSuccess = false; }
+
                 setPrices(prev => {
                     const next: Record<string, { value: number, change: number, trend: 'up' | 'down' }> = {};
-                    Object.keys(prev).forEach(k => {
-                        const maxFluctuation = k === 'BTCUSD' ? 50 : k === 'XAUUSD' ? 2 : 0.0005;
+                    
+                    ['EURUSD', 'GBPUSD', 'USDJPY'].forEach(k => {
+                        const maxFluctuation = k === 'USDJPY' ? 0.01 : 0.00005;
                         const fluctuation = (Math.random() - 0.5) * maxFluctuation;
-                        const newValue = Math.max(0, prev[k].value + fluctuation);
+                        const newValue = prev[k].value + fluctuation;
                         const isUp = fluctuation >= 0;
                         next[k] = {
                             value: newValue,
@@ -55,6 +83,25 @@ export const Dashboard = () => {
                             trend: isUp ? 'up' : 'down'
                         };
                     });
+
+                    if (apiSuccess) {
+                        const btcTrend = btcPrice >= prev['BTCUSD'].value ? 'up' : 'down';
+                        next['BTCUSD'] = { value: btcPrice, change: prev['BTCUSD'].change + (btcTrend === 'up' ? 0.05 : -0.05), trend: btcTrend };
+                        
+                        const xauTrend = xauPrice >= prev['XAUUSD'].value ? 'up' : 'down';
+                        next['XAUUSD'] = { value: xauPrice, change: prev['XAUUSD'].change + (xauTrend === 'up' ? 0.02 : -0.02), trend: xauTrend };
+                    } else {
+                        // Fallback if Binance is blocked
+                        ['BTCUSD', 'XAUUSD'].forEach(k => {
+                            const maxFluctuation = k === 'BTCUSD' ? 10 : 0.5;
+                            const fluctuation = (Math.random() - 0.5) * maxFluctuation;
+                            next[k] = {
+                                value: prev[k].value + fluctuation,
+                                change: prev[k].change + (fluctuation >= 0 ? 0.05 : -0.05),
+                                trend: fluctuation >= 0 ? 'up' : 'down'
+                            };
+                        });
+                    }
                     return next;
                 });
             }, 2000);
