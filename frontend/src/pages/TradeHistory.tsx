@@ -75,7 +75,40 @@ export const TradeHistory = () => {
     const totalPnL = trades.reduce((acc, t) => acc + (t.pnl || 0), 0);
     const winCount = trades.filter(t => t.pnl > 0).length;
     const winRate = trades.length > 0 ? (winCount / trades.length * 100).toFixed(1) : 0;
-    const profitFactor = 1.42; // Simulated or calculated from gross wins/losses
+    
+    // Dynamic math-accurate calculations
+    const grossProfits = trades.filter(t => t.pnl > 0).reduce((acc, t) => acc + (t.pnl || 0), 0);
+    const grossLosses = Math.abs(trades.filter(t => t.pnl < 0).reduce((acc, t) => acc + (t.pnl || 0), 0));
+    const profitFactor = grossLosses > 0 ? (grossProfits / grossLosses).toFixed(2) : grossProfits > 0 ? 'Max' : '0.00';
+
+    const downloadCSVReport = () => {
+        if (trades.length === 0) return;
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "ID,Symbol,Action,Position Size,Entry Price,Exit Price,PnL ($),Entry Time,Exit Time\n";
+        
+        trades.forEach(t => {
+            const row = [
+                t.id,
+                t.symbol,
+                t.tradeType,
+                t.positionSize,
+                t.entryPrice,
+                t.exitPrice || '--',
+                t.pnl !== null ? t.pnl : '--',
+                t.entryTime || '--',
+                t.exitTime || '--'
+            ].join(",");
+            csvContent += row + "\n";
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `forexquant_performance_report_${Date.now()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     return (
         <div style={{ padding: '30px', color: '#fff', maxWidth: '1400px', margin: '0 auto', animation: 'fadeIn 0.8s ease-out' }}>
@@ -83,6 +116,25 @@ export const TradeHistory = () => {
                 <div>
                     <h2 className="gradient-text" style={{ fontSize: '32px', marginBottom: '5px', fontWeight: '800' }}>PORTFOLIO ANALYTICS</h2>
                     <p style={{ color: 'var(--text-muted)' }}>Real-time attribution and historical execution ledger</p>
+                    <button 
+                        onClick={downloadCSVReport}
+                        disabled={trades.length === 0}
+                        style={{
+                            marginTop: '15px',
+                            background: 'var(--exness-yellow)',
+                            color: '#000',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            fontWeight: '700',
+                            cursor: trades.length === 0 ? 'not-allowed' : 'pointer',
+                            opacity: trades.length === 0 ? 0.5 : 1,
+                            transition: 'all 0.3s'
+                        }}
+                    >
+                        Download CSV Report
+                    </button>
                 </div>
                 <div style={{ display: 'flex', gap: '15px' }}>
                     <div className="glass-panel" style={{ padding: '15px 25px', textAlign: 'center' }}>
