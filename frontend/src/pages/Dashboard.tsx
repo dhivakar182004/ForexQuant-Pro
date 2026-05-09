@@ -28,6 +28,7 @@ export const Dashboard = () => {
     const [isReplaying, setIsReplaying] = useState(false);
     const [replaySpeed, setReplaySpeed] = useState(1);
     const [replayIndex, setReplayIndex] = useState(50);
+    const [replayStartDate, setReplayStartDate] = useState(() => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
     const [prices, setPrices] = useState<Record<string, { value: number, change: number, trend: 'up' | 'down' }>>({
@@ -143,9 +144,9 @@ export const Dashboard = () => {
           .catch(err => console.error("Could not fetch trades", err));
     }, []);
 
-    const fetchHistory = async () => {
+    const fetchHistory = async (customStart?: string) => {
         try {
-            const start = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            const start = customStart ? new Date(customStart).toISOString() : new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
             const end = new Date().toISOString();
             const formattedSymbol = currentSymbol === 'EURUSD' ? 'OANDA:EUR_USD' : currentSymbol;
             const res = await axios.get(`${API_BASE}/api/market/history?symbol=${formattedSymbol}&start=${start}&end=${end}`);
@@ -246,10 +247,28 @@ export const Dashboard = () => {
                         {/* Top Right Overlay Controls */}
                         <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
                             {mode === 'live' && (
-                                <button onClick={() => { setMode('replay'); setReplayIndex(50); setIsReplaying(true); }} className="btn-exness" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }} title="Enter Replay Mode">
-                                    <Play size={16} fill="currentColor" />
-                                    <span>Replay</span>
-                                </button>
+                                <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.8)', padding: '2px', borderRadius: '4px', border: '1px solid var(--border)' }}>
+                                    <input 
+                                        type="date" 
+                                        value={replayStartDate}
+                                        onChange={(e) => setReplayStartDate(e.target.value)}
+                                        style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '13px', outline: 'none', padding: '0 8px', cursor: 'pointer', fontFamily: 'inherit' }}
+                                        title="Select start date for replay"
+                                    />
+                                    <button 
+                                        onClick={async () => { 
+                                            await fetchHistory(replayStartDate);
+                                            setMode('replay'); 
+                                            setReplayIndex(50); 
+                                            setIsReplaying(true); 
+                                        }} 
+                                        className="btn-exness" 
+                                        style={{ padding: '6px 12px', background: 'transparent', display: 'flex', alignItems: 'center', gap: '6px', borderLeft: '1px solid #333', borderRadius: 0 }} 
+                                        title="Enter Replay Mode">
+                                        <Play size={16} fill="var(--exness-yellow)" />
+                                        <span style={{ color: 'var(--exness-yellow)', fontWeight: 600 }}>Replay</span>
+                                    </button>
+                                </div>
                             )}
                             <button onClick={() => setIsFullscreen(!isFullscreen)} className="btn-exness" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }} title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Chart"}>
                                 {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
