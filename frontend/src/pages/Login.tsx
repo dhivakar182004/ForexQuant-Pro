@@ -9,6 +9,7 @@ export const Login = () => {
   const [isOtpMode, setIsOtpMode] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
+  const [devOtpMessage, setDevOtpMessage] = useState('');
   
   const handleLogin = async () => {
     try {
@@ -22,15 +23,19 @@ export const Login = () => {
 
   const handleSendOtp = async () => {
     try {
+      setDevOtpMessage('');
       const res = await axios.post(`${API_BASE}/api/auth/request-otp`, { emailOrPhone: email });
       setOtpSent(true);
       if (res.data.devOtp) {
-          alert(`[DEV] OTP Sent! Your code is: ${res.data.devOtp}`);
-      } else {
-          alert("OTP Sent! Check your phone/email.");
+          setDevOtpMessage(`[Simulator] Your OTP code is: ${res.data.devOtp}`);
+          setOtpCode(res.data.devOtp); // Auto-fill for convenience
       }
-    } catch(err) {
-      alert("Could not send OTP. Make sure you are registered.");
+    } catch(err: any) {
+      if (err.response?.status === 404) {
+          alert("Phone number not registered. Please create an account first.");
+      } else {
+          alert("Could not send OTP. Please try again.");
+      }
     }
   };
 
@@ -110,7 +115,14 @@ export const Login = () => {
                 {!otpSent ? (
                   <button onClick={handleSendOtp} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Send Verification Code</button>
                 ) : (
-                  <button onClick={handleLoginOtp} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Verify and Continue</button>
+                  <>
+                    <button onClick={handleLoginOtp} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Verify and Continue</button>
+                    {devOtpMessage && (
+                      <div style={{ marginTop: '15px', padding: '12px', background: 'rgba(0, 200, 83, 0.1)', color: 'var(--success)', borderRadius: '4px', textAlign: 'center', fontSize: '13px', border: '1px solid var(--success)', fontWeight: '600' }}>
+                        {devOtpMessage}
+                      </div>
+                    )}
+                  </>
                 )}
               </>
             )}
