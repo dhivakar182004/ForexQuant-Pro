@@ -5,15 +5,14 @@ interface TradingViewChartProps {
   mode: 'live' | 'replay';
   historicalData?: any[];
   onPriceUpdate?: (price: number) => void;
-  isReplaying?: boolean;
-  replaySpeed?: number;
+  replayIndex?: number;
 }
 
-export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, historicalData, onPriceUpdate, isReplaying, replaySpeed = 1 }) => {
+export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, historicalData, onPriceUpdate, replayIndex }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
-  const [replayIndex, setReplayIndex] = useState(0);
+  const prevReplayIndex = useRef(0);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -70,11 +69,12 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, histor
       seriesRef.current = candlestickSeries;
 
       if (historicalData && historicalData.length > 0) {
-        // Initialize with a chunk of data so the chart isn't empty
+        // Initialize with a chunk of data if not specified
         const initialDataLength = Math.min(50, historicalData.length);
-        const initialData = historicalData.slice(0, initialDataLength);
+        const idx = replayIndex !== undefined ? replayIndex : initialDataLength;
+        const initialData = historicalData.slice(0, idx);
         candlestickSeries.setData(initialData);
-        setReplayIndex(initialDataLength);
+        prevReplayIndex.current = idx;
       }
 
       const handleResize = () => {
@@ -88,25 +88,23 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ mode, histor
     }
   }, [mode, historicalData]);
 
-  // Handle Replay Playback
+  // Handle Replay Playback externally via replayIndex
   useEffect(() => {
-    if (mode === 'replay' && isReplaying && historicalData && seriesRef.current) {
-      const intervalMs = 1000 / replaySpeed;
-      const interval = setInterval(() => {
-        setReplayIndex((prev) => {
-          if (prev < historicalData.length) {
-            seriesRef.current.update(historicalData[prev]);
-            if (onPriceUpdate) onPriceUpdate(historicalData[prev].close);
-            return prev + 1;
-          } else {
-            clearInterval(interval);
-            return prev;
-          }
-        });
-      }, intervalMs);
-      return () => clearInterval(interval);
+    if (mode === 'replay' && historicalData && seriesRef.current && replayIndex !== undefined) {
+      if (replayIndex === prevReplayIndex.current + 1 && replayIndex <= historicalData.length) {
+         // Smooth incremental append
+         seriesRef.current.update(historicalData[replayIndex - 1]);
+      } else {
+         // Jump or reset
+         seriesRef.current.setData(historicalData.slice(0, replayIndex));
+      }
+      prevReplayIndex.current = replayIndex;
+
+      if (onPriceUpdate && replayIndex > 0 && replayIndex <= historicalData.length) {
+        onPriceUpdate(historicalData[replayIndex - 1].close);
+      }
     }
-  }, [mode, isReplaying, replaySpeed, historicalData, onPriceUpdate]);
+  }, [replayIndex, mode, historicalData, onPriceUpdate]);
 
   return (
     <div style={{ height: '600px', width: '100%', background: '#000' }}>

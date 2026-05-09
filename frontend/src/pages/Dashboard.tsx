@@ -5,6 +5,7 @@ import { RiskDashboard } from '../components/dashboard/RiskDashboard';
 import { TickerNav } from '../components/TickerNav';
 import { TopNavbar } from '../components/TopNavbar';
 import { ReplayToolbar } from '../components/terminal/ReplayToolbar';
+import { Maximize, Minimize, Play } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
 
@@ -26,6 +27,23 @@ export const Dashboard = () => {
     const [currentPrice, setCurrentPrice] = useState<number>(1.10000);
     const [isReplaying, setIsReplaying] = useState(false);
     const [replaySpeed, setReplaySpeed] = useState(1);
+    const [replayIndex, setReplayIndex] = useState(50);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+
+    // Main Replay Loop
+    useEffect(() => {
+        let interval: any;
+        if (mode === 'replay' && isReplaying && historicalData.length > 0) {
+            interval = setInterval(() => {
+                setReplayIndex(prev => {
+                    if (prev < historicalData.length) return prev + 1;
+                    setIsReplaying(false);
+                    return prev;
+                });
+            }, 1000 / replaySpeed);
+        }
+        return () => clearInterval(interval);
+    }, [mode, isReplaying, replaySpeed, historicalData]);
 
     useEffect(() => {
         fetchHistory(); // Fetch historical data immediately so the live chart is not blank
@@ -109,14 +127,17 @@ export const Dashboard = () => {
                 </div>
 
                 {/* Main Trading Area */}
-                <div style={{ display: 'grid', gridTemplateRows: '1fr 200px', flex: 1, overflow: 'hidden' }}>
-                    <div className="grid-cell" style={{ position: 'relative', padding: 0 }}>
+                <div style={
+                    isFullscreen ? {
+                        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, background: '#000', display: 'flex', flexDirection: 'column'
+                    } : { display: 'grid', gridTemplateRows: '1fr 200px', flex: 1, overflow: 'hidden' }
+                }>
+                    <div className="grid-cell" style={{ position: 'relative', padding: 0, flex: isFullscreen ? 1 : undefined }}>
                         <TradingViewChart 
                             mode={mode} 
                             historicalData={historicalData} 
                             onPriceUpdate={setCurrentPrice}
-                            isReplaying={isReplaying}
-                            replaySpeed={replaySpeed}
+                            replayIndex={replayIndex}
                         />
                         
                         {/* Overlay Controls */}
@@ -125,30 +146,30 @@ export const Dashboard = () => {
                                 <span style={{ fontWeight: '600' }}>EURUSD</span>
                                 <span style={{ color: 'var(--success)' }}>{currentPrice.toFixed(5)}</span>
                             </div>
-                            <button onClick={() => setMode(mode === 'live' ? 'replay' : 'live')} className="btn-exness" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)' }}>
-                                {mode === 'live' ? 'Enter Replay' : 'Exit Replay'}
-                            </button>
-                            {mode === 'replay' && (
+                            
+                            {mode === 'live' ? (
+                                <button onClick={() => { setMode('replay'); setReplayIndex(50); setIsReplaying(true); }} className="btn-exness" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }} title="Enter Replay Mode">
+                                    <Play size={16} fill="currentColor" />
+                                    <span>Replay</span>
+                                </button>
+                            ) : (
                                 <ReplayToolbar 
                                     isPlaying={isReplaying}
                                     onTogglePlay={() => setIsReplaying(!isReplaying)}
-                                    onRewind={() => {}} 
-                                    onForward={() => {}} 
+                                    onRewind={() => setReplayIndex(prev => Math.max(1, prev - 10))} 
+                                    onForward={() => setReplayIndex(prev => Math.min(historicalData.length, prev + 1))} 
                                     speed={replaySpeed}
                                     onSpeedChange={setReplaySpeed}
+                                    onClose={() => {
+                                        setMode('live');
+                                        setIsReplaying(false);
+                                    }}
                                 />
                             )}
-                        </div>
-                    </div>
-
-                    {/* Trade History / Positions Footer */}
-                    <div className="grid-cell" style={{ borderTop: '1px solid var(--border)', padding: 0 }}>
-                        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', display: 'flex', gap: '24px' }}>
-                            <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--exness-yellow)', borderBottom: '2px solid var(--exness-yellow)', paddingBottom: '10px' }}>Open Orders (1)</span>
-                            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Closed History</span>
-                        </div>
-                        <div style={{ padding: '16px' }}>
-                            <RiskDashboard trades={trades} onCloseTrade={closeTrade} />
+                            
+                            <button onClick={() => setIsFullscreen(!isFullscreen)} className="btn-exness" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }} title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Chart"}>
+                                {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+                            </button>
                         </div>
                     </div>
                 </div>
