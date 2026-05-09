@@ -108,8 +108,8 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, mode
   }, [replayIndex, mode, historicalData, onPriceUpdate]);
 
   return (
-    <div style={{ height: '600px', width: '100%', background: '#000' }}>
-      <div id="tv_chart_container" ref={containerRef} style={{ height: '600px', width: '100%' }} />
+    <div style={{ height: '100%', width: '100%', background: '#000', display: 'flex', flex: 1 }}>
+      <div id="tv_chart_container" ref={containerRef} style={{ height: '100%', width: '100%', flex: 1 }} />
     </div>
   );
 };

@@ -177,7 +177,7 @@ export const Dashboard = () => {
                 <div style={
                     isFullscreen ? {
                         position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, background: '#000', display: 'flex', flexDirection: 'column'
-                    } : { display: 'grid', gridTemplateRows: '1fr 200px', flex: 1, overflow: 'hidden' }
+                    } : { display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }
                 }>
                     <div className="grid-cell" style={{ position: 'relative', padding: 0, flex: isFullscreen ? 1 : undefined }}>
                         <TradingViewChart 
@@ -188,19 +188,30 @@ export const Dashboard = () => {
                             replayIndex={replayIndex}
                         />
                         
-                        {/* Overlay Controls */}
+                        {/* Top Left Overlay Controls */}
                         <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
                             <div className="exness-card" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <span style={{ fontWeight: '600' }}>{currentSymbol}</span>
                                 <span style={{ color: 'var(--success)' }}>{currentPrice.toFixed(currentSymbol.includes('JPY') ? 3 : 5)}</span>
                             </div>
-                            
-                            {mode === 'live' ? (
+                        </div>
+
+                        {/* Top Right Overlay Controls */}
+                        <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
+                            {mode === 'live' && (
                                 <button onClick={() => { setMode('replay'); setReplayIndex(50); setIsReplaying(true); }} className="btn-exness" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }} title="Enter Replay Mode">
                                     <Play size={16} fill="currentColor" />
                                     <span>Replay</span>
                                 </button>
-                            ) : (
+                            )}
+                            <button onClick={() => setIsFullscreen(!isFullscreen)} className="btn-exness" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }} title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Chart"}>
+                                {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+                            </button>
+                        </div>
+
+                        {/* Bottom Center Replay Controls (GoCharting style) */}
+                        {mode === 'replay' && (
+                            <div style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 100 }}>
                                 <ReplayToolbar 
                                     isPlaying={isReplaying}
                                     onTogglePlay={() => setIsReplaying(!isReplaying)}
@@ -213,12 +224,8 @@ export const Dashboard = () => {
                                         setIsReplaying(false);
                                     }}
                                 />
-                            )}
-                            
-                            <button onClick={() => setIsFullscreen(!isFullscreen)} className="btn-exness" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }} title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Chart"}>
-                                {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
-                            </button>
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
