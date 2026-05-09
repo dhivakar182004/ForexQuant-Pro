@@ -264,6 +264,7 @@ export const Dashboard = () => {
                             historicalData={historicalData} 
                             onPriceUpdate={setCurrentPrice}
                             replayIndex={replayIndex}
+                            livePrice={currentPrice}
                         />
                         
                         {/* Top Left Overlay Controls */}
