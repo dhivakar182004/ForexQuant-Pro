@@ -19,12 +19,11 @@ export const TopNavbar = () => {
             </div>
             
             <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '14px', fontWeight: '600' }}>100 000.00 USD</div>
-                    <div style={{ fontSize: '11px', color: 'var(--success)', fontWeight: '600' }}>REAL • MT5</div>
+                <div 
+                    onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }}
+                    style={{ width: '32px', height: '32px', background: '#333', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '14px', title: 'Logout' }}>
+                    D
                 </div>
-                <button className="btn-exness btn-exness-outline" style={{ padding: '8px 16px' }} onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }}>Deposit</button>
-                <div style={{ width: '32px', height: '32px', background: '#333', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '14px' }}>D</div>
             </div>
         </div>
     );
