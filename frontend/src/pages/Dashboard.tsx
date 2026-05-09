@@ -41,11 +41,11 @@ export const Dashboard = () => {
         'BTCUSD': { value: 64300.0, change: 0.0, trend: 'up' }
     });
 
-    // Fetch Live Real-Time Market updates from Binance with today's live values
+    // Fetch Live Real-Time Market updates from Binance via Backend Proxy with today's live values
     useEffect(() => {
         const fetchAllLivePrices = async () => {
             try {
-                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["EURUSDT","GBPUSDT","USDTJPY","BTCUSDT","PAXGUSDT"]');
+                const res = await fetch(`${API_BASE}/api/market/prices`);
                 const data = await res.json();
                 
                 const getPrice = (symbol: string) => {
@@ -136,34 +136,9 @@ export const Dashboard = () => {
         try {
             const tf = customTimeframe || timeframe;
             
-            const getBinanceSymbol = (sym: string) => {
-                switch (sym) {
-                    case 'EURUSD': return 'EURUSDT';
-                    case 'GBPUSD': return 'GBPUSDT';
-                    case 'USDJPY': return 'USDTJPY';
-                    case 'XAUUSD': return 'PAXGUSDT';
-                    case 'BTCUSD': return 'BTCUSDT';
-                    default: return 'BTCUSDT';
-                }
-            };
-
-            const getBinanceInterval = (tframe: string) => {
-                switch (tframe) {
-                    case '1m': return '1m';
-                    case '5m': return '5m';
-                    case '15m': return '15m';
-                    case '1H': return '1h';
-                    case '4H': return '4h';
-                    case '1D': return '1d';
-                    default: return '15m';
-                }
-            };
-
-            const binanceSymbol = getBinanceSymbol(currentSymbol);
-            const binanceInterval = getBinanceInterval(tf);
             const startTimeMs = customStart ? new Date(customStart).getTime() : undefined;
 
-            let url = `https://api.binance.com/api/v3/klines?symbol=${binanceSymbol}&interval=${binanceInterval}&limit=500`;
+            let url = `${API_BASE}/api/market/history?symbol=${currentSymbol}&timeframe=${tf}`;
             if (startTimeMs) {
                 url += `&startTime=${startTimeMs}`;
             }
@@ -181,7 +156,7 @@ export const Dashboard = () => {
                     }));
                 }
             } catch (err) {
-                console.warn("Binance API failed or rate-limited, falling back to local simulation.", err);
+                console.warn("Backend market history proxy failed, falling back to local simulation.", err);
             }
 
             if (fetchedData.length > 0) {
