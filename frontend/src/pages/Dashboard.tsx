@@ -251,7 +251,7 @@ export const Dashboard = () => {
             <div className="dynamic-bg"></div>
             <TopNavbar />
             
-            <div className="dashboard-grid" style={{ display: 'grid', gridTemplateColumns: isFullscreen ? '1fr' : '280px 1fr 340px', height: 'calc(100vh - 60px)', gap: '1px', background: 'var(--border)' }}>
+            <div className="dashboard-grid" style={{ display: 'grid', gridTemplateColumns: isFullscreen ? '1fr' : '280px 1fr', height: 'calc(100vh - 60px)', gap: '1px', background: 'var(--border)' }}>
                 {/* Instruments Sidebar */}
                 <div className="grid-cell" style={{ borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -405,126 +405,6 @@ export const Dashboard = () => {
                         )}
                     </div>
                 </div>
-
-                {/* Right Panel: Order Placement & Risk-Reward Center */}
-                {!isFullscreen && (
-                    <div className="grid-cell" style={{ borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column', overflowY: 'auto', gap: '16px', padding: '16px' }}>
-                        <div>
-                            <span style={{ fontWeight: '600', fontSize: '14px', display: 'block', marginBottom: '15px' }}>Practicing Order Desk</span>
-                            
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                {/* Position Size */}
-                                <div>
-                                    <label style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Position Size (Units)</label>
-                                    <input 
-                                        type="number" 
-                                        value={positionSize}
-                                        onChange={(e) => setPositionSize(Number(e.target.value))}
-                                        style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '4px', padding: '8px', color: '#fff', fontSize: '13px', outline: 'none' }}
-                                    />
-                                </div>
-
-                                {/* Stop Loss */}
-                                <div style={{ display: 'flex', gap: '10px' }}>
-                                    <div style={{ flex: 1 }}>
-                                        <label style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Stop Loss (SL)</label>
-                                        <input 
-                                            type="number" 
-                                            step="0.00001"
-                                            value={stopLoss}
-                                            onChange={(e) => setStopLoss(e.target.value)}
-                                            placeholder="None"
-                                            style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '4px', padding: '8px', color: '#fff', fontSize: '13px', outline: 'none' }}
-                                        />
-                                    </div>
-                                    <div style={{ flex: 1 }}>
-                                        <label style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Take Profit (TP)</label>
-                                        <input 
-                                            type="number" 
-                                            step="0.00001"
-                                            value={takeProfit}
-                                            onChange={(e) => setTakeProfit(e.target.value)}
-                                            placeholder="None"
-                                            style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '4px', padding: '8px', color: '#fff', fontSize: '13px', outline: 'none' }}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Calculated R:R Display */}
-                                {calculatedRR && (
-                                    <div className="exness-card" style={{ padding: '8px 12px', background: 'rgba(255,211,0,0.05)', borderColor: 'rgba(255,211,0,0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '11px', color: 'var(--exness-yellow)', fontWeight: 'bold' }}>PLANNED R:R RATIO:</span>
-                                        <span style={{ fontSize: '13px', fontWeight: 'bold', color: parseFloat(calculatedRR) >= 2.0 ? 'var(--success)' : 'var(--exness-yellow)' }}>
-                                            1 : {calculatedRR}
-                                        </span>
-                                    </div>
-                                )}
-
-                                {/* Buy / Sell Actions */}
-                                <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                                    <button 
-                                        onClick={() => executeTrade('BUY')}
-                                        className="trade-btn trade-btn-buy"
-                                    >
-                                        <span style={{ fontSize: '12px', color: '#888' }}>BUY</span>
-                                        <span style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--success)' }}>Ask</span>
-                                    </button>
-                                    <button 
-                                        onClick={() => executeTrade('SELL')}
-                                        className="trade-btn trade-btn-sell"
-                                    >
-                                        <span style={{ fontSize: '12px', color: '#888' }}>SELL</span>
-                                        <span style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--danger)' }}>Bid</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Risk-Reward Performance Chart Component */}
-                        <RiskRewardGraph trades={trades} />
-
-                        {/* Performance Metrics summary */}
-                        <div className="exness-card" style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto' }}>
-                            <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Session Metrics</span>
-                            
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '4px' }}>
-                                    <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>WIN RATE</div>
-                                    <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--exness-yellow)' }}>
-                                        {trades.length > 0 ? ((trades.filter(t => (t.pnl || 0) > 0).length / trades.length) * 100).toFixed(1) : '0.0'}%
-                                    </div>
-                                </div>
-                                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '4px' }}>
-                                    <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>NET P&L</div>
-                                    <div style={{ fontSize: '16px', fontWeight: 'bold', color: trades.reduce((acc, t) => acc + (t.pnl || 0), 0) >= 0 ? 'var(--success)' : 'var(--danger)' }}>
-                                        ${trades.reduce((acc, t) => acc + (t.pnl || 0), 0).toFixed(2)}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-muted)', textTransform: 'uppercase', marginTop: '10px' }}>Active Positions</span>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                {trades.filter(t => !t.exitPrice).map(t => (
-                                    <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', borderLeft: `3px solid ${t.tradeType === 'BUY' ? 'var(--success)' : 'var(--danger)'}` }}>
-                                        <div>
-                                            <div style={{ fontSize: '12px', fontWeight: 'bold' }}>{t.symbol} {t.tradeType}</div>
-                                            <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Size: {t.positionSize.toLocaleString()}</div>
-                                        </div>
-                                        <button 
-                                            onClick={() => closeTrade(t.id)}
-                                            style={{ background: 'rgba(239,83,80,0.15)', color: 'var(--danger)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
-                                        >
-                                            CLOSE
-                                        </button>
-                                    </div>
-                                ))}
-                                {trades.filter(t => !t.exitPrice).length === 0 && (
-                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', padding: '10px' }}>No active positions.</div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );
