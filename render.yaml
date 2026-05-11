@@ -3,4 +3,3 @@ databases:
     databaseName: forexquant
     user: admin
     plan: free
-`
