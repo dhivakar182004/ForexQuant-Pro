@@ -13,8 +13,8 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
-# Limit JVM memory for Render Free Tier (512MB) to prevent silent OOM kills
-ENV JAVA_OPTS="-Xmx256m -Xms128m -XX:MaxMetaspaceSize=100m -XX:ReservedCodeCacheSize=64m -Xss256k"
+# Aggressively limit JVM memory for Render Free Tier (512MB limit) to prevent OOM kills
+ENV JAVA_OPTS="-Xmx192m -Xms96m -XX:MaxMetaspaceSize=80m -XX:ReservedCodeCacheSize=48m -Xss256k -XX:+UseSerialGC"
 
 EXPOSE 8081
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar app.jar"]
