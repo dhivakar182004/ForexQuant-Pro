@@ -1,7 +1,6 @@
 services:
-  - type: web
+  - type: static
     name: forex-quant-frontend
-    env: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
     envVars:
@@ -11,7 +10,7 @@ services:
         value: wss://forex-quant-backend.onrender.com/ws-forex
   - type: web
     name: forex-quant-backend
-    env: docker
+    runtime: docker
     rootDir: backend
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/auth/health
@@ -21,23 +20,23 @@ services:
         value: prod
       - key: DB_HOST
         fromDatabase:
-          name: forex-quant-db
+          name: forex-quant-db-v2
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: forex-quant-db
+          name: forex-quant-db-v2
           property: port
       - key: DB_NAME
         fromDatabase:
-          name: forex-quant-db
+          name: forex-quant-db-v2
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: forex-quant-db
+          name: forex-quant-db-v2
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: forex-quant-db
+          name: forex-quant-db-v2
           property: password
       - key: GOOGLE_CLIENT_ID
         sync: false # Set in Render Dashboard
@@ -47,7 +46,7 @@ services:
         generateValue: true
 
 databases:
-  - name: forex-quant-db
+  - name: forex-quant-db-v2
     databaseName: forexquant
     user: admin
     plan: free
