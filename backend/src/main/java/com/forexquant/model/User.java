@@ -37,4 +37,8 @@ public class User {
 
     @Column(nullable = false)
     private boolean totpEnabled = false;
+
+    // Password Reset Fields
+    private String resetToken;
+    private java.time.LocalDateTime resetTokenExpiry;
 }

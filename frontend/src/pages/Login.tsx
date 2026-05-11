@@ -94,7 +94,6 @@ export const Login = () => {
                     value={password} 
                     onChange={e => setPassword(e.target.value)} 
                     placeholder="Enter password"
-                    maxLength={8}
                     style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', color: '#fff' }} 
                   />
                 </div>

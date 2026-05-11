@@ -8,7 +8,7 @@ import { Analytics } from './pages/Analytics';
 import { TradeHistory } from './pages/TradeHistory';
 import { RiskTools } from './pages/RiskTools';
 import { Strategies } from './pages/Strategies';
-import { Optimizer } from './pages/Optimizer';
+import { Optimizer } from './pages/Optimizer';import { ForgotPassword } from './pages/ForgotPassword';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('token');
@@ -23,6 +23,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/otp-verification" element={<OtpVerification />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         
         {/* Protected Routes */}
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

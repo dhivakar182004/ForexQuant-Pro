@@ -11,6 +11,10 @@ export const Register = () => {
             alert("Passwords do not match!");
             return;
         }
+        if (formData.password.length < 8) {
+            alert("Password must be at least 8 characters long!");
+            return;
+        }
         try {
             await axios.post(`${API_BASE}/api/auth/signup`, { 
                 email: formData.email, 
@@ -70,7 +74,6 @@ export const Register = () => {
                     value={formData.password} 
                     onChange={e => setFormData({...formData, password: e.target.value})} 
                     placeholder="Create password"
-                    maxLength={8}
                     style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', color: '#fff' }} 
                   />
                 </div>
@@ -82,7 +85,6 @@ export const Register = () => {
                     value={formData.confirmPassword} 
                     onChange={e => setFormData({...formData, confirmPassword: e.target.value})} 
                     placeholder="Confirm password"
-                    maxLength={8}
                     style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', color: '#fff' }} 
                   />
                 </div>

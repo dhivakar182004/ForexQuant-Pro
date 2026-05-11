@@ -105,4 +105,61 @@ public class AuthController {
             return ResponseEntity.status(401).body(new MessageResponse("Error: Invalid or expired OTP"));
         }
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is required"));
+        }
+        var userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            // Generate random 6-digit code
+            String resetToken = String.format("%06d", new java.util.Random().nextInt(999999));
+            user.setResetToken(resetToken);
+            user.setResetTokenExpiry(java.time.LocalDateTime.now().plusMinutes(15));
+            userRepository.save(user);
+
+            return ResponseEntity.ok(Map.of(
+                "message", "Reset code generated successfully!",
+                "devToken", resetToken
+            ));
+        }
+        return ResponseEntity.status(404).body(new MessageResponse("Error: Email address not found"));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String token = payload.get("token");
+        String newPassword = payload.get("newPassword");
+
+        if (email == null || token == null || newPassword == null) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Missing required parameters"));
+        }
+
+        if (newPassword.length() < 8) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Password must be at least 8 characters long"));
+        }
+
+        var userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (user.getResetToken() != null && user.getResetToken().equals(token)) {
+                if (user.getResetTokenExpiry() != null && user.getResetTokenExpiry().isAfter(java.time.LocalDateTime.now())) {
+                    user.setPassword(newPassword);
+                    user.setResetToken(null);
+                    user.setResetTokenExpiry(null);
+                    userRepository.save(user);
+                    return ResponseEntity.ok(new MessageResponse("Password updated successfully!"));
+                } else {
+                    return ResponseEntity.status(400).body(new MessageResponse("Error: Reset code has expired!"));
+                }
+            } else {
+                return ResponseEntity.status(401).body(new MessageResponse("Error: Invalid reset code!"));
+            }
+        }
+        return ResponseEntity.status(404).body(new MessageResponse("Error: User not found!"));
+    }
 }
