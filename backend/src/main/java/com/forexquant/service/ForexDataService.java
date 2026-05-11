@@ -6,7 +6,8 @@ import com.forexquant.model.Candle;
 import com.forexquant.repository.CandleRepository;
 import com.forexquant.repository.StrategyRepository;
 import com.forexquant.model.Strategy;
-import jakarta.annotation.PostConstruct;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -42,7 +43,7 @@ public class ForexDataService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final List<Candle> batch = new ArrayList<>();
 
-    @PostConstruct
+    @EventListener(ContextRefreshedEvent.class)
     public void connectToExternalForexApi() {
         if (websocketUrl == null || websocketUrl.isBlank() || websocketUrl.contains("YOUR_FINNHUB_KEY")) {
             System.out.println("No External API Key found. Starting Mock Data Simulator for EUR/USD...");
