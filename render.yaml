@@ -17,8 +17,6 @@ services:
     healthCheckPath: /api/auth/health
     plan: free # Can be upgraded for higher performance
     envVars:
-      - key: PORT
-        value: 8081
       - key: SPRING_PROFILES_ACTIVE
         value: prod
       - key: DB_HOST
