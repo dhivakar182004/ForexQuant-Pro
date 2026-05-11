@@ -15,12 +15,19 @@ public class JwtUtils {
 
     private int jwtExpirationMs = 86400000;
 
+    private Key signingKey;
+
     private Key getSigningKey() {
-        if (jwtSecret == null || jwtSecret.isEmpty()) {
-            // Default random key for simple local dev if env not set
-            return Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        if (signingKey != null) {
+            return signingKey;
         }
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        if (jwtSecret == null || jwtSecret.isEmpty()) {
+            // Default random key for simple local dev if env not set, cached to avoid regeneration mismatch
+            signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        } else {
+            signingKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        }
+        return signingKey;
     }
 
     public String generateJwtTokenFromEmail(String email, boolean fullyAuthenticated) {
