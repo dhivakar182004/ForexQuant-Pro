@@ -1,5 +1,32 @@
 import React, { useEffect, useState } from 'react';
 
+const parseDateTime = (val: any): Date => {
+    if (!val) return new Date();
+    if (Array.isArray(val)) {
+        // [year, month, day, hour = 0, minute = 0, second = 0]
+        const [year, month, day, hour = 0, minute = 0, second = 0] = val;
+        return new Date(year, month - 1, day, hour, minute, second);
+    }
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) {
+        return d;
+    }
+    try {
+        const cleaned = String(val).replace(' ', 'T');
+        const fallbackDate = new Date(cleaned);
+        if (!isNaN(fallbackDate.getTime())) {
+            return fallbackDate;
+        }
+    } catch (e) {}
+    return new Date();
+};
+
+const formatTime = (val: any): string => {
+    if (!val) return '--';
+    const date = parseDateTime(val);
+    return date.toLocaleString();
+};
+
 interface Trade {
   id: number;
   symbol: string;
@@ -85,11 +112,11 @@ export const History: React.FC = () => {
                   </td>
                   <td className="p-4">
                     <div className="text-gray-100">{trade.entryPrice.toFixed(4)}</div>
-                    <div className="text-[10px] text-gray-500">{trade.entryTime}</div>
+                    <div className="text-[10px] text-gray-500">{formatTime(trade.entryTime)}</div>
                   </td>
                   <td className="p-4">
                     <div className="text-gray-100">{trade.exitPrice.toFixed(4)}</div>
-                    <div className="text-[10px] text-gray-500">{trade.exitTime}</div>
+                    <div className="text-[10px] text-gray-500">{formatTime(trade.exitTime)}</div>
                   </td>
                   <td className="p-4 text-gray-400">{trade.positionSize.toLocaleString()}</td>
                   <td className="p-4">

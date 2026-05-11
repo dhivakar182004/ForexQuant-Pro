@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createChart } from 'lightweight-charts';
+import { MousePointer, TrendingUp, Minus, Square, Trash2, ArrowUpRight, AlignJustify, MoreVertical } from 'lucide-react';
 
 interface TradingViewChartProps {
   symbol: string;
@@ -11,7 +12,24 @@ interface TradingViewChartProps {
   activeIndicators?: string[];
 }
 
-export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, mode, historicalData, onPriceUpdate, replayIndex, livePrice, activeIndicators = [] }) => {
+interface DrawingShape {
+  id: string;
+  type: 'trendline' | 'horizontal' | 'rectangle' | 'arrow' | 'fibonacci' | 'vertical';
+  startTime: number;
+  startPrice: number;
+  endTime?: number;
+  endPrice?: number;
+}
+
+export const TradingViewChart: React.FC<TradingViewChartProps> = ({ 
+  symbol, 
+  mode, 
+  historicalData, 
+  onPriceUpdate, 
+  replayIndex, 
+  livePrice, 
+  activeIndicators = [] 
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mainChartRef = useRef<any>(null);
   const rsiChartRef = useRef<any>(null);
@@ -22,6 +40,16 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, mode
   const ema21Ref = useRef<any>(null);
   const rsiRef = useRef<any>(null);
   const prevReplayIndex = useRef(0);
+
+  // Drawing Tools State
+  const [drawings, setDrawings] = useState<DrawingShape[]>([]);
+  const [activeTool, setActiveTool] = useState<'none' | 'trendline' | 'horizontal' | 'rectangle' | 'arrow' | 'fibonacci' | 'vertical'>('none');
+  const [scaleTrigger, setScaleTrigger] = useState<number>(0);
+  
+  // Drag drawing states
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
+  const [dragStart, setDragStart] = useState<{ time: number, price: number, x: number, y: number } | null>(null);
+  const [dragCurrent, setDragCurrent] = useState<{ time: number, price: number, x: number, y: number } | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -95,6 +123,13 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, mode
     ema9Ref.current = ema9Series;
     ema21Ref.current = ema21Series;
 
+    // Trigger state redraw on scroll or zoom
+    const handleRangeUpdate = () => {
+      setScaleTrigger(prev => prev + 1);
+    };
+    mainChart.timeScale().subscribeVisibleLogicalRangeChange(handleRangeUpdate);
+    mainChart.priceScale('right').subscribeVisiblePriceRangeChange(handleRangeUpdate);
+
     // Initialize RSI Sub-Chart if active
     let rsiChart: any = null;
     let rsiSeries: any = null;
@@ -134,6 +169,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, mode
       mainChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
         rsiChart.timeScale().setVisibleLogicalRange(range || null);
       });
+      rsiChart.timeScale().subscribeVisibleLogicalRangeChange(handleRangeUpdate);
       rsiChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
         mainChart.timeScale().setVisibleLogicalRange(range || null);
       });
@@ -234,6 +270,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, mode
           });
         }
       }
+      setScaleTrigger(prev => prev + 1);
     };
 
     window.addEventListener('resize', handleResize);
@@ -262,7 +299,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, mode
     }
   }, [livePrice, mode, historicalData]);
 
-  // Handle Replay Playback externally via replayIndex
+  // Handle Replay Playback
   useEffect(() => {
     if (mode === 'replay' && historicalData && seriesRef.current && replayIndex !== undefined) {
       const displayData = historicalData.slice(0, replayIndex);
@@ -274,7 +311,6 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, mode
       }
       prevReplayIndex.current = replayIndex;
 
-      // Incremental Indicator Updates
       const calculateSMA = (data: any[], period: number) => {
         const smaData = [];
         for (let i = 0; i < data.length; i++) {
@@ -345,12 +381,425 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, mode
       if (onPriceUpdate && replayIndex > 0 && replayIndex <= historicalData.length) {
         onPriceUpdate(historicalData[replayIndex - 1].close);
       }
+      setScaleTrigger(prev => prev + 1);
     }
   }, [replayIndex, mode, historicalData, onPriceUpdate, activeIndicators]);
 
+  // SVG Mouse Drawing Handlers
+  const handleSvgMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (activeTool === 'none' || !mainChartRef.current || !seriesRef.current) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const time = mainChartRef.current.timeScale().coordinateToTime(x);
+    const price = seriesRef.current.coordinateToPrice(y);
+
+    if (time === null || price === null) return;
+
+    // Single-click tools
+    if (activeTool === 'horizontal' || activeTool === 'vertical') {
+      const newShape: DrawingShape = {
+        id: Math.random().toString(36).substring(7),
+        type: activeTool,
+        startTime: time,
+        startPrice: price,
+        endTime: time,
+        endPrice: price
+      };
+      setDrawings(prev => [...prev, newShape]);
+      return;
+    }
+
+    setIsDrawing(true);
+    setDragStart({ time, price, x, y });
+    setDragCurrent({ time, price, x, y });
+  };
+
+  const handleSvgMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!isDrawing || !dragStart || !mainChartRef.current || !seriesRef.current) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const time = mainChartRef.current.timeScale().coordinateToTime(x);
+    const price = seriesRef.current.coordinateToPrice(y);
+
+    if (time === null || price === null) return;
+
+    setDragCurrent({ time, price, x, y });
+  };
+
+  const handleSvgMouseUp = () => {
+    if (!isDrawing || !dragStart || !dragCurrent) return;
+
+    const newShape: DrawingShape = {
+      id: Math.random().toString(36).substring(7),
+      type: activeTool as any,
+      startTime: dragStart.time,
+      startPrice: dragStart.price,
+      endTime: dragCurrent.time,
+      endPrice: dragCurrent.price
+    };
+
+    setDrawings(prev => [...prev, newShape]);
+    setIsDrawing(false);
+    setDragStart(null);
+    setDragCurrent(null);
+  };
+
+  // Convert logical values to pixels dynamically on scaleTrigger state changes (renders live)
+  const renderedShapes = drawings.map(draw => {
+    if (!mainChartRef.current || !seriesRef.current) return null;
+
+    const x1 = mainChartRef.current.timeScale().timeToCoordinate(draw.startTime);
+    const y1 = seriesRef.current.priceToCoordinate(draw.startPrice);
+    
+    let x2 = null;
+    let y2 = null;
+
+    if (draw.endTime !== undefined) {
+      x2 = mainChartRef.current.timeScale().timeToCoordinate(draw.endTime);
+    }
+    if (draw.endPrice !== undefined) {
+      y2 = seriesRef.current.priceToCoordinate(draw.endPrice);
+    }
+
+    return {
+      ...draw,
+      x1,
+      y1,
+      x2,
+      y2
+    };
+  }).filter(s => s !== null && s.x1 !== null && s.y1 !== null);
+
+  // Active shape drag preview details
+  let activeRendered = null;
+  if (isDrawing && dragStart && dragCurrent) {
+    activeRendered = {
+      type: activeTool,
+      x1: dragStart.x,
+      y1: dragStart.y,
+      x2: dragCurrent.x,
+      y2: dragCurrent.y
+    };
+  }
+
   return (
-    <div style={{ height: '100%', width: '100%', background: '#000', display: 'flex', flex: 1 }}>
+    <div style={{ height: '100%', width: '100%', background: '#000', display: 'flex', flex: 1, position: 'relative' }}>
+      
+      {/* Floating Glassmorphic Drawing Toolbar (HUD) */}
+      <div 
+        style={{ 
+          position: 'absolute', 
+          top: '20px', 
+          left: '20px', 
+          zIndex: 50, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '6px', 
+          background: 'rgba(10,10,10,0.85)', 
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '6px',
+          padding: '6px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+        }}
+      >
+        <button 
+          title="Pan & Hover Cursor"
+          onClick={() => setActiveTool('none')}
+          style={{
+            background: activeTool === 'none' ? 'var(--exness-yellow)' : 'transparent',
+            color: activeTool === 'none' ? '#000' : '#888',
+            border: 'none',
+            padding: '8px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s'
+          }}
+        >
+          <MousePointer size={16} />
+        </button>
+
+        <button 
+          title="Draw Trend Line"
+          onClick={() => setActiveTool('trendline')}
+          style={{
+            background: activeTool === 'trendline' ? 'var(--exness-yellow)' : 'transparent',
+            color: activeTool === 'trendline' ? '#000' : '#888',
+            border: 'none',
+            padding: '8px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s'
+          }}
+        >
+          <TrendingUp size={16} />
+        </button>
+
+        <button 
+          title="Place Horizontal Level"
+          onClick={() => setActiveTool('horizontal')}
+          style={{
+            background: activeTool === 'horizontal' ? 'var(--exness-yellow)' : 'transparent',
+            color: activeTool === 'horizontal' ? '#000' : '#888',
+            border: 'none',
+            padding: '8px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s'
+          }}
+        >
+          <Minus size={16} />
+        </button>
+
+        <button 
+          title="Place Vertical Line"
+          onClick={() => setActiveTool('vertical')}
+          style={{
+            background: activeTool === 'vertical' ? 'var(--exness-yellow)' : 'transparent',
+            color: activeTool === 'vertical' ? '#000' : '#888',
+            border: 'none',
+            padding: '8px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s'
+          }}
+        >
+          <MoreVertical size={16} />
+        </button>
+
+        <button 
+          title="Draw Arrow / Ray"
+          onClick={() => setActiveTool('arrow')}
+          style={{
+            background: activeTool === 'arrow' ? 'var(--exness-yellow)' : 'transparent',
+            color: activeTool === 'arrow' ? '#000' : '#888',
+            border: 'none',
+            padding: '8px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s'
+          }}
+        >
+          <ArrowUpRight size={16} />
+        </button>
+
+        <button 
+          title="Fibonacci Retracement"
+          onClick={() => setActiveTool('fibonacci')}
+          style={{
+            background: activeTool === 'fibonacci' ? 'var(--exness-yellow)' : 'transparent',
+            color: activeTool === 'fibonacci' ? '#000' : '#888',
+            border: 'none',
+            padding: '8px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s'
+          }}
+        >
+          <AlignJustify size={16} />
+        </button>
+
+        <button 
+          title="Draw Demand/Supply Zone (Rectangle)"
+          onClick={() => setActiveTool('rectangle')}
+          style={{
+            background: activeTool === 'rectangle' ? 'var(--exness-yellow)' : 'transparent',
+            color: activeTool === 'rectangle' ? '#000' : '#888',
+            border: 'none',
+            padding: '8px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s'
+          }}
+        >
+          <Square size={16} />
+        </button>
+
+        <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '4px 0' }} />
+
+        <button 
+          title="Clear All Annotations"
+          onClick={() => setDrawings([])}
+          style={{
+            background: 'transparent',
+            color: '#ff3d00',
+            border: 'none',
+            padding: '8px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,61,0,0.1)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+
+      {/* Main Lightweight Chart Grid Container */}
       <div id="tv_chart_container" ref={containerRef} style={{ height: '100%', width: '100%', flex: 1 }} />
+
+      {/* Transparent SVG Interactive Drawing Overlay Layer */}
+      <svg 
+        onMouseDown={handleSvgMouseDown}
+        onMouseMove={handleSvgMouseMove}
+        onMouseUp={handleSvgMouseUp}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: activeIndicators.includes('RSI14') ? '73%' : '100%', // Align strictly with main pane height, avoiding RSI pane
+          zIndex: activeTool !== 'none' ? 40 : 5, // Bring to front when tool active, fall to back during cursor hover zoom operations
+          pointerEvents: activeTool !== 'none' ? 'auto' : 'none',
+          cursor: activeTool !== 'none' ? 'crosshair' : 'default',
+          background: 'transparent'
+        }}
+      >
+        {/* Render Saved Annotations */}
+        {renderedShapes.map((shape: any) => {
+          if (!shape) return null;
+          return (
+            <g key={shape.id}>
+              {shape.type === 'vertical' && (
+                <line 
+                  x1={shape.x1} 
+                  y1="0" 
+                  x2={shape.x1} 
+                  y2="100%" 
+                  stroke="var(--exness-yellow)" 
+                  strokeWidth="1.5" 
+                  strokeDasharray="4" 
+                />
+              )}
+              {shape.type === 'horizontal' && (
+                <line 
+                  x1="0" 
+                  y1={shape.y1} 
+                  x2="100%" 
+                  y2={shape.y1} 
+                  stroke="var(--exness-yellow)" 
+                  strokeWidth="1.5" 
+                  strokeDasharray="4" 
+                />
+              )}
+              {(shape.type === 'trendline' || shape.type === 'arrow') && shape.x2 !== null && shape.y2 !== null && (
+                <g>
+                  <line 
+                    x1={shape.x1} 
+                    y1={shape.y1} 
+                    x2={shape.x2} 
+                    y2={shape.y2} 
+                    stroke="var(--exness-yellow)" 
+                    strokeWidth="2" 
+                  />
+                  {shape.type === 'arrow' && (
+                    <polygon 
+                      points="0,-6 12,0 0,6" 
+                      fill="var(--exness-yellow)"
+                      transform={`translate(${shape.x2},${shape.y2}) rotate(${Math.atan2(shape.y2 - shape.y1, shape.x2 - shape.x1) * 180 / Math.PI})`}
+                    />
+                  )}
+                </g>
+              )}
+              {shape.type === 'fibonacci' && shape.x2 !== null && shape.y2 !== null && (
+                <g>
+                  <line x1={shape.x1} y1={shape.y1} x2={shape.x2} y2={shape.y2} stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeDasharray="3" />
+                  {[0, 0.236, 0.382, 0.5, 0.618, 0.786, 1].map((level) => {
+                    const y = shape.y1 + (shape.y2 - shape.y1) * level;
+                    const w = Math.abs(shape.x2 - shape.x1);
+                    return (
+                      <g key={level}>
+                        <line 
+                          x1={Math.min(shape.x1, shape.x2)} 
+                          y1={y} 
+                          x2={Math.max(shape.x1, shape.x2)} 
+                          y2={y} 
+                          stroke={level === 0.5 || level === 0.618 ? 'rgba(0,255,0,0.6)' : 'rgba(255, 211, 0, 0.6)'} 
+                          strokeWidth="1" 
+                        />
+                        <text x={Math.max(shape.x1, shape.x2) + 5} y={y + 4} fill="rgba(255,255,255,0.6)" fontSize="10px">
+                          {level.toFixed(3)}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </g>
+              )}
+              {shape.type === 'rectangle' && shape.x2 !== null && shape.y2 !== null && (
+                <rect 
+                  x={Math.min(shape.x1, shape.x2)} 
+                  y={Math.min(shape.y1, shape.y2)} 
+                  width={Math.abs(shape.x2 - shape.x1)} 
+                  height={Math.abs(shape.y2 - shape.y1)} 
+                  fill="rgba(255, 211, 0, 0.12)" 
+                  stroke="var(--exness-yellow)" 
+                  strokeWidth="1.5" 
+                />
+              )}
+            </g>
+          );
+        })}
+
+        {/* Render Drag-Draw Preview */}
+        {activeRendered && (
+          <g>
+            {(activeRendered.type === 'trendline' || activeRendered.type === 'arrow' || activeRendered.type === 'fibonacci') && (
+              <line 
+                x1={activeRendered.x1} 
+                y1={activeRendered.y1} 
+                x2={activeRendered.x2} 
+                y2={activeRendered.y2} 
+                stroke="rgba(255, 211, 0, 0.7)" 
+                strokeWidth="2" 
+                strokeDasharray="3" 
+              />
+            )}
+            {activeRendered.type === 'rectangle' && (
+              <rect 
+                x={Math.min(activeRendered.x1, activeRendered.x2)} 
+                y={Math.min(activeRendered.y1, activeRendered.y2)} 
+                width={Math.abs(activeRendered.x2 - activeRendered.x1)} 
+                height={Math.abs(activeRendered.y2 - activeRendered.y1)} 
+                fill="rgba(255, 211, 0, 0.08)" 
+                stroke="rgba(255, 211, 0, 0.7)" 
+                strokeWidth="1.5" 
+                strokeDasharray="2"
+              />
+            )}
+          </g>
+        )}
+      </svg>
     </div>
   );
 };

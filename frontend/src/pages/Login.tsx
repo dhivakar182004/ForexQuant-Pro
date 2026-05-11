@@ -16,8 +16,9 @@ export const Login = () => {
       const res = await axios.post(`${API_BASE}/api/auth/signin`, { email, password });
       localStorage.setItem('token', res.data.token);
       window.location.href = res.data.requiresTotp ? '/otp-verification' : '/dashboard';
-    } catch(err) {
-      alert("Invalid credentials! Please check your details.");
+    } catch(err: any) {
+      const errorMsg = err.response?.data?.message || err.message || "Invalid credentials! Please check your details.";
+      alert(`Login failed: ${errorMsg}`);
     }
   };
 

@@ -1,5 +1,32 @@
 import React, { useMemo } from 'react';
 
+const parseDateTime = (val: any): Date => {
+    if (!val) return new Date();
+    if (Array.isArray(val)) {
+        // [year, month, day, hour = 0, minute = 0, second = 0]
+        const [year, month, day, hour = 0, minute = 0, second = 0] = val;
+        return new Date(year, month - 1, day, hour, minute, second);
+    }
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) {
+        return d;
+    }
+    try {
+        const cleaned = String(val).replace(' ', 'T');
+        const fallbackDate = new Date(cleaned);
+        if (!isNaN(fallbackDate.getTime())) {
+            return fallbackDate;
+        }
+    } catch (e) {}
+    return new Date();
+};
+
+const formatTime = (val: any): string => {
+    if (!val) return '--';
+    const date = parseDateTime(val);
+    return date.toLocaleString();
+};
+
 export interface TradeRecord {
   id: number;
   symbol: string;
@@ -110,7 +137,7 @@ export const RiskDashboard: React.FC<RiskDashboardProps> = ({ trades, onCloseTra
             <tr key={t.id}>
               <td>{t.symbol}</td>
               <td style={{ color: t.tradeType === 'BUY' ? '#26a69a' : '#ef5350' }}>{t.tradeType}</td>
-              <td>{new Date(t.entryTime).toLocaleString()}</td>
+              <td>{formatTime(t.entryTime)}</td>
               <td>{t.entryPrice?.toFixed(5)}</td>
               <td>{t.exitPrice ? t.exitPrice.toFixed(5) : '-'}</td>
               <td>{t.positionSize}</td>

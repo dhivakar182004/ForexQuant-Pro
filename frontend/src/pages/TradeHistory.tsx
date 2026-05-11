@@ -2,6 +2,33 @@ import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { createChart, IChartApi } from 'lightweight-charts';
 
+const parseDateTime = (val: any): Date => {
+    if (!val) return new Date();
+    if (Array.isArray(val)) {
+        // [year, month, day, hour = 0, minute = 0, second = 0]
+        const [year, month, day, hour = 0, minute = 0, second = 0] = val;
+        return new Date(year, month - 1, day, hour, minute, second);
+    }
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) {
+        return d;
+    }
+    try {
+        const cleaned = String(val).replace(' ', 'T');
+        const fallbackDate = new Date(cleaned);
+        if (!isNaN(fallbackDate.getTime())) {
+            return fallbackDate;
+        }
+    } catch (e) {}
+    return new Date();
+};
+
+const formatTime = (val: any): string => {
+    if (!val) return '--';
+    const date = parseDateTime(val);
+    return date.toLocaleString();
+};
+
 export const TradeHistory = () => {
     const [trades, setTrades] = useState<any[]>([]);
     const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -44,11 +71,11 @@ export const TradeHistory = () => {
         let cumulative = 100000; // Assuming $100k starting
         const data = trades
             .filter(t => t.exitTime)
-            .sort((a, b) => new Date(a.exitTime).getTime() - new Date(b.exitTime).getTime())
+            .sort((a, b) => parseDateTime(a.exitTime).getTime() - parseDateTime(b.exitTime).getTime())
             .map(t => {
                 cumulative += (t.pnl || 0);
                 return {
-                    time: Math.floor(new Date(t.exitTime).getTime() / 1000),
+                    time: Math.floor(parseDateTime(t.exitTime).getTime() / 1000),
                     value: cumulative
                 };
             });
@@ -172,7 +199,9 @@ export const TradeHistory = () => {
                             <th style={{ padding: '15px 20px' }}>Symbol</th>
                             <th style={{ padding: '15px 20px' }}>Action</th>
                             <th style={{ padding: '15px 20px' }}>Size</th>
+                            <th style={{ padding: '15px 20px' }}>Entry Time</th>
                             <th style={{ padding: '15px 20px' }}>Entry Price</th>
+                            <th style={{ padding: '15px 20px' }}>Exit Time</th>
                             <th style={{ padding: '15px 20px' }}>Exit Price</th>
                             <th style={{ padding: '15px 20px', textAlign: 'right' }}>PnL ($)</th>
                         </tr>
@@ -191,7 +220,11 @@ export const TradeHistory = () => {
                                     </span>
                                 </td>
                                 <td style={{ padding: '15px 20px', color: '#888' }}>{t.positionSize?.toLocaleString()}</td>
+                                <td style={{ padding: '15px 20px', color: '#ccc', fontSize: '13px' }}>{formatTime(t.entryTime)}</td>
                                 <td style={{ padding: '15px 20px', fontFamily: 'monospace' }}>{t.entryPrice?.toFixed(5)}</td>
+                                <td style={{ padding: '15px 20px', color: '#ccc', fontSize: '13px' }}>
+                                    {t.exitTime ? formatTime(t.exitTime) : <span style={{ color: 'var(--primary)', fontSize: '11px' }}>--</span>}
+                                </td>
                                 <td style={{ padding: '15px 20px', fontFamily: 'monospace' }}>
                                     {t.exitPrice ? t.exitPrice.toFixed(5) : <span style={{ color: 'var(--primary)', fontSize: '11px' }}>● ACTIVE</span>}
                                 </td>

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { TradingViewChart } from '../components/chart/TradingViewChart';
 import { RiskDashboard } from '../components/dashboard/RiskDashboard';
 import { RiskRewardGraph } from '../components/dashboard/RiskRewardGraph';
@@ -109,6 +111,64 @@ export const Dashboard = () => {
             return () => clearInterval(interval);
         }
     }, [mode]);
+
+    // STOMP WebSocket Connection for True Real-Time Price Ingestion
+    useEffect(() => {
+        if (mode !== 'live') return;
+
+        const stompClient = new Client({
+            webSocketFactory: () => new SockJS(`${API_BASE}/ws-forex`),
+            reconnectDelay: 5000,
+            debug: (str) => console.log('[STOMP]:', str),
+        });
+
+        stompClient.onConnect = () => {
+            console.log('[STOMP] Connected successfully to Forex real-time tick stream!');
+            stompClient.subscribe('/topic/candles', (message) => {
+                try {
+                    const candle = JSON.parse(message.body);
+                    const rawSym = candle.symbol;
+                    
+                    // Normalize standard forex symbols (e.g. OANDA:EUR_USD -> EURUSD)
+                    const cleanSym = rawSym.replace('OANDA:', '').replace('_', '').replace('/', '');
+                    const priceVal = parseFloat(candle.close);
+                    
+                    setPrices(prev => {
+                        if (!prev[cleanSym]) return prev;
+                        const prevVal = prev[cleanSym].value;
+                        const trend = priceVal >= prevVal ? 'up' : 'down';
+                        const percentChange = prevVal > 0 ? ((priceVal - prevVal) / prevVal) * 100 : 0;
+                        
+                        return {
+                            ...prev,
+                            [cleanSym]: {
+                                value: priceVal,
+                                change: percentChange !== 0 ? percentChange : prev[cleanSym].change,
+                                trend: trend as any
+                            }
+                        };
+                    });
+
+                    // Update currentPrice if active symbol is ticked
+                    if (cleanSym === currentSymbol) {
+                        setCurrentPrice(priceVal);
+                    }
+                } catch (e) {
+                    console.error('[STOMP] error parsing live candle:', e);
+                }
+            });
+        };
+
+        stompClient.onStompError = (frame) => {
+            console.error('[STOMP] Broker error:', frame.headers['message']);
+        };
+
+        stompClient.activate();
+
+        return () => {
+            stompClient.deactivate();
+        };
+    }, [mode, currentSymbol]);
 
     // Main Replay Loop
     useEffect(() => {
