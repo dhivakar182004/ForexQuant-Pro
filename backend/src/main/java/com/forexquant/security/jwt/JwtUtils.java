@@ -21,11 +21,19 @@ public class JwtUtils {
         if (signingKey != null) {
             return signingKey;
         }
-        if (jwtSecret == null || jwtSecret.isEmpty()) {
-            // Default random key for simple local dev if env not set, cached to avoid regeneration mismatch
+        try {
+            if (jwtSecret == null || jwtSecret.isEmpty()) {
+                // Default random key for simple local dev if env not set, cached to avoid regeneration mismatch
+                signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+            } else {
+                // Ensure key is exactly 512 bits (64 bytes) by hashing the configured secret with SHA-512
+                java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-512");
+                byte[] hashedBytes = digest.digest(jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                signingKey = Keys.hmacShaKeyFor(hashedBytes);
+            }
+        } catch (Exception e) {
+            // Ultimate fallback to prevent crashes under any environment
             signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-        } else {
-            signingKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         }
         return signingKey;
     }
