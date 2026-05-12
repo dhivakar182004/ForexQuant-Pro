@@ -182,13 +182,64 @@ body {
   overflow: hidden;
 }
 
+/* Premium Chart Overlays */
+.chart-top-left-controls {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  z-index: 10;
+}
+
+.chart-top-right-controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  z-index: 10;
+}
+
 @media (max-width: 1024px) {
   .dashboard-grid {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column-reverse; /* Put chart on top, instruments panel below on mobile */
     height: auto;
     overflow-y: auto;
   }
   .grid-cell {
     height: auto;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-top-left-controls {
+    top: 8px;
+    left: 8px;
+    gap: 4px;
+    max-width: 65%;
+  }
+  .chart-top-right-controls {
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+    max-width: 30%;
+  }
+  .chart-top-left-controls .fq-card, .chart-top-right-controls .fq-card {
+    padding: 2px 6px !important;
+  }
+  .chart-top-left-controls button, .chart-top-right-controls button {
+    padding: 2px 6px !important;
+    font-size: 9px !important;
+  }
+  .chart-top-left-controls span, .chart-top-right-controls span {
+    font-size: 10px !important;
+  }
+  .chart-top-right-controls input[type="date"] {
+    display: none !important; /* Hide date picker on small mobile overlay to prevent overlap */
   }
 }

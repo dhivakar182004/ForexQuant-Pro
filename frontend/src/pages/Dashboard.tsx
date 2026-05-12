@@ -368,7 +368,7 @@ export const Dashboard = () => {
                         </ErrorBoundary>
                         
                         {/* Top Left Overlay Controls */}
-                        <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
+                        <div className="chart-top-left-controls">
                             <div className="fq-card" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <span style={{ fontWeight: '600' }}>{currentSymbol}</span>
                                 <span style={{ color: 'var(--success)' }}>{currentPrice.toFixed(currentSymbol.includes('JPY') ? 3 : 5)}</span>
@@ -418,7 +418,7 @@ export const Dashboard = () => {
                         </div>
 
                         {/* Top Right Overlay Controls */}
-                        <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
+                        <div className="chart-top-right-controls">
                             {mode === 'live' && (
                                 <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.8)', padding: '2px', borderRadius: '4px', border: '1px solid var(--border)' }}>
                                     <input 
