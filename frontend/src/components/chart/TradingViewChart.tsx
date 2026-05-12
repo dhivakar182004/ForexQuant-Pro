@@ -105,6 +105,11 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
       }
     });
 
+    if (!mainChart || typeof mainChart.addCandlestickSeries !== 'function') {
+      console.warn("Lightweight charts initialization failed (possibly due to headless browser canvas restrictions). Gracefully bypassing.");
+      return;
+    }
+
     const candlestickSeries = mainChart.addCandlestickSeries({
       upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
       wickUpColor: '#26a69a', wickDownColor: '#ef5350',
@@ -128,7 +133,6 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
       setScaleTrigger(prev => prev + 1);
     };
     mainChart.timeScale().subscribeVisibleLogicalRangeChange(handleRangeUpdate);
-    mainChart.priceScale('right').subscribeVisiblePriceRangeChange(handleRangeUpdate);
 
     // Initialize RSI Sub-Chart if active
     let rsiChart: any = null;
@@ -158,6 +162,11 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
           },
         }
       });
+
+      if (!rsiChart || typeof rsiChart.addLineSeries !== 'function') {
+        console.warn("RSI charts initialization failed. Gracefully bypassing.");
+        return;
+      }
 
       rsiSeries = rsiChart.addLineSeries({ color: '#FF9800', lineWidth: 1.5 });
       
@@ -513,7 +522,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
           title="Pan & Hover Cursor"
           onClick={() => setActiveTool('none')}
           style={{
-            background: activeTool === 'none' ? 'var(--exness-yellow)' : 'transparent',
+            background: activeTool === 'none' ? 'var(--fq-gold)' : 'transparent',
             color: activeTool === 'none' ? '#000' : '#888',
             border: 'none',
             padding: '8px',
@@ -532,7 +541,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
           title="Draw Trend Line"
           onClick={() => setActiveTool('trendline')}
           style={{
-            background: activeTool === 'trendline' ? 'var(--exness-yellow)' : 'transparent',
+            background: activeTool === 'trendline' ? 'var(--fq-gold)' : 'transparent',
             color: activeTool === 'trendline' ? '#000' : '#888',
             border: 'none',
             padding: '8px',
@@ -551,7 +560,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
           title="Place Horizontal Level"
           onClick={() => setActiveTool('horizontal')}
           style={{
-            background: activeTool === 'horizontal' ? 'var(--exness-yellow)' : 'transparent',
+            background: activeTool === 'horizontal' ? 'var(--fq-gold)' : 'transparent',
             color: activeTool === 'horizontal' ? '#000' : '#888',
             border: 'none',
             padding: '8px',
@@ -570,7 +579,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
           title="Place Vertical Line"
           onClick={() => setActiveTool('vertical')}
           style={{
-            background: activeTool === 'vertical' ? 'var(--exness-yellow)' : 'transparent',
+            background: activeTool === 'vertical' ? 'var(--fq-gold)' : 'transparent',
             color: activeTool === 'vertical' ? '#000' : '#888',
             border: 'none',
             padding: '8px',
@@ -589,7 +598,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
           title="Draw Arrow / Ray"
           onClick={() => setActiveTool('arrow')}
           style={{
-            background: activeTool === 'arrow' ? 'var(--exness-yellow)' : 'transparent',
+            background: activeTool === 'arrow' ? 'var(--fq-gold)' : 'transparent',
             color: activeTool === 'arrow' ? '#000' : '#888',
             border: 'none',
             padding: '8px',
@@ -608,7 +617,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
           title="Fibonacci Retracement"
           onClick={() => setActiveTool('fibonacci')}
           style={{
-            background: activeTool === 'fibonacci' ? 'var(--exness-yellow)' : 'transparent',
+            background: activeTool === 'fibonacci' ? 'var(--fq-gold)' : 'transparent',
             color: activeTool === 'fibonacci' ? '#000' : '#888',
             border: 'none',
             padding: '8px',
@@ -627,7 +636,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
           title="Draw Demand/Supply Zone (Rectangle)"
           onClick={() => setActiveTool('rectangle')}
           style={{
-            background: activeTool === 'rectangle' ? 'var(--exness-yellow)' : 'transparent',
+            background: activeTool === 'rectangle' ? 'var(--fq-gold)' : 'transparent',
             color: activeTool === 'rectangle' ? '#000' : '#888',
             border: 'none',
             padding: '8px',
@@ -697,7 +706,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
                   y1="0" 
                   x2={shape.x1} 
                   y2="100%" 
-                  stroke="var(--exness-yellow)" 
+                  stroke="var(--fq-gold)" 
                   strokeWidth="1.5" 
                   strokeDasharray="4" 
                 />
@@ -708,7 +717,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
                   y1={shape.y1} 
                   x2="100%" 
                   y2={shape.y1} 
-                  stroke="var(--exness-yellow)" 
+                  stroke="var(--fq-gold)" 
                   strokeWidth="1.5" 
                   strokeDasharray="4" 
                 />
@@ -720,13 +729,13 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
                     y1={shape.y1} 
                     x2={shape.x2} 
                     y2={shape.y2} 
-                    stroke="var(--exness-yellow)" 
+                    stroke="var(--fq-gold)" 
                     strokeWidth="2" 
                   />
                   {shape.type === 'arrow' && (
                     <polygon 
                       points="0,-6 12,0 0,6" 
-                      fill="var(--exness-yellow)"
+                      fill="var(--fq-gold)"
                       transform={`translate(${shape.x2},${shape.y2}) rotate(${Math.atan2(shape.y2 - shape.y1, shape.x2 - shape.x1) * 180 / Math.PI})`}
                     />
                   )}
@@ -763,7 +772,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
                   width={Math.abs(shape.x2 - shape.x1)} 
                   height={Math.abs(shape.y2 - shape.y1)} 
                   fill="rgba(255, 211, 0, 0.12)" 
-                  stroke="var(--exness-yellow)" 
+                  stroke="var(--fq-gold)" 
                   strokeWidth="1.5" 
                 />
               )}

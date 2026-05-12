@@ -18,15 +18,15 @@ export const Analytics = () => {
             
             {stats ? (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '20px' }}>
-                    <div className="glass-panel" style={{ padding: '25px', borderTop: '3px solid var(--primary)' }}>
+                    <div className="fq-card" style={{ padding: '25px', borderTop: '3px solid var(--primary)', background: 'var(--bg-card)', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)', borderBottom: '1px solid var(--border)', borderRadius: '8px' }}>
                         <div style={{color: 'var(--text-muted)', fontSize: '13px', fontWeight: 'bold', marginBottom: '10px'}}>TOTAL VOLUME TRADED</div>
                         <div style={{fontSize: '32px', fontWeight: 'bold'}}>${stats.totalVolumeTraded?.toLocaleString()}</div>
                     </div>
-                    <div className="glass-panel" style={{ padding: '25px', borderTop: '3px solid var(--success)' }}>
+                    <div className="fq-card" style={{ padding: '25px', borderTop: '3px solid var(--success)', background: 'var(--bg-card)', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)', borderBottom: '1px solid var(--border)', borderRadius: '8px' }}>
                         <div style={{color: 'var(--text-muted)', fontSize: '13px', fontWeight: 'bold', marginBottom: '10px'}}>ACTIVE ALGORITHMIC SESSIONS</div>
                         <div style={{fontSize: '32px', fontWeight: 'bold'}}>{stats.activeSessions}</div>
                     </div>
-                    <div className="glass-panel" style={{ padding: '25px', borderTop: '3px solid var(--danger)' }}>
+                    <div className="fq-card" style={{ padding: '25px', borderTop: '3px solid var(--danger)', background: 'var(--bg-card)', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)', borderBottom: '1px solid var(--border)', borderRadius: '8px' }}>
                         <div style={{color: 'var(--text-muted)', fontSize: '13px', fontWeight: 'bold', marginBottom: '10px'}}>AVG. SYSTEM LATENCY</div>
                         <div style={{fontSize: '32px', fontWeight: 'bold', color: 'var(--success)'}}>{stats.latencyMs}ms</div>
                     </div>

@@ -34,13 +34,13 @@ export const Register = () => {
           
           <div style={{ padding: '40px', textAlign: 'center' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '32px', height: '32px', background: 'var(--exness-yellow)', borderRadius: '2px' }}></div>
+                  <div style={{ width: '32px', height: '32px', background: 'var(--fq-gold)', borderRadius: '2px' }}></div>
                   <span style={{ fontWeight: '700', fontSize: '28px', letterSpacing: '-0.5px' }}>ForexQuant Pro</span>
               </div>
           </div>
 
           <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '100px' }}>
-            <div className="exness-card animate-up" style={{ width: '450px', padding: '40px' }}>
+            <div className="fq-card animate-up" style={{ width: '450px', padding: '40px' }}>
               <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '8px' }}>Create account</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '32px' }}>Join the global trading community</p>
               
@@ -89,12 +89,12 @@ export const Register = () => {
                   />
                 </div>
 
-                <button onClick={handleRegister} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Create account</button>
+                <button onClick={handleRegister} className="btn-fq btn-fq-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Create account</button>
               </div>
               
               <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--border)', textAlign: 'center' }}>
                 <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Already have an account? </span>
-                <a href="/login" style={{ color: 'var(--exness-yellow)', textDecoration: 'none', fontSize: '14px', fontWeight: '600' }}>Sign in</a>
+                <a href="/login" style={{ color: 'var(--fq-gold)', textDecoration: 'none', fontSize: '14px', fontWeight: '600' }}>Sign in</a>
               </div>
             </div>
           </div>

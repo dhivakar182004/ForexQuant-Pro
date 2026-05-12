@@ -284,11 +284,11 @@ export const Strategies = () => {
                     </div>
                     
                     {/* Premium 3-Tab Selectors */}
-                    <div className="exness-card" style={{ display: 'flex', gap: '4px', padding: '4px', background: '#111' }}>
+                    <div className="fq-card" style={{ display: 'flex', gap: '4px', padding: '4px', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
                         <button 
                             onClick={() => setActiveTab('builder')}
                             style={{ 
-                                background: activeTab === 'builder' ? 'var(--exness-yellow)' : 'transparent', 
+                                background: activeTab === 'builder' ? 'var(--fq-gold)' : 'transparent', 
                                 color: activeTab === 'builder' ? '#000' : 'var(--text-muted)', 
                                 border: 'none', 
                                 padding: '8px 18px', 
@@ -304,7 +304,7 @@ export const Strategies = () => {
                         <button 
                             onClick={() => setActiveTab('tester')}
                             style={{ 
-                                background: activeTab === 'tester' ? 'var(--exness-yellow)' : 'transparent', 
+                                background: activeTab === 'tester' ? 'var(--fq-gold)' : 'transparent', 
                                 color: activeTab === 'tester' ? '#000' : 'var(--text-muted)', 
                                 border: 'none', 
                                 padding: '8px 18px', 
@@ -320,7 +320,7 @@ export const Strategies = () => {
                         <button 
                             onClick={() => setActiveTab('manager')}
                             style={{ 
-                                background: activeTab === 'manager' ? 'var(--exness-yellow)' : 'transparent', 
+                                background: activeTab === 'manager' ? 'var(--fq-gold)' : 'transparent', 
                                 color: activeTab === 'manager' ? '#000' : 'var(--text-muted)', 
                                 border: 'none', 
                                 padding: '8px 18px', 
@@ -340,9 +340,9 @@ export const Strategies = () => {
                     /* TAB 1: VISUAL STRATEGY BUILDER */
                     <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', animation: 'fadeIn 0.4s' }}>
                         {/* Visual Form Builder Card */}
-                        <div className="glass-panel" style={{ padding: '30px', background: 'rgba(18,18,18,0.7)', border: '1px solid var(--border)', borderRadius: '6px' }}>
+                        <div className="fq-card" style={{ padding: '30px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '25px' }}>
-                                <Settings size={20} color="var(--exness-yellow)" />
+                                <Settings size={20} color="var(--fq-gold)" />
                                 <h4 style={{ fontWeight: '800', fontSize: '16px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Visual Strategy Composer</h4>
                             </div>
 
@@ -384,13 +384,13 @@ export const Strategies = () => {
                                 <div style={{ display: 'flex', gap: '15px', borderBottom: '1px solid var(--border)', paddingBottom: '15px', marginBottom: '5px' }}>
                                     <button 
                                         onClick={() => setIsCustomJson(false)}
-                                        style={{ background: !isCustomJson ? 'rgba(255,211,0,0.1)' : 'transparent', border: !isCustomJson ? '1px solid var(--exness-yellow)' : '1px solid #333', color: !isCustomJson ? 'var(--exness-yellow)' : 'var(--text-muted)', padding: '6px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                                        style={{ background: !isCustomJson ? 'rgba(212,175,55,0.1)' : 'transparent', border: !isCustomJson ? '1px solid var(--fq-gold)' : '1px solid #333', color: !isCustomJson ? 'var(--fq-gold)' : 'var(--text-muted)', padding: '6px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
                                     >
                                         Visual No-Code Builder
                                     </button>
                                     <button 
                                         onClick={() => setIsCustomJson(true)}
-                                        style={{ background: isCustomJson ? 'rgba(255,211,0,0.1)' : 'transparent', border: isCustomJson ? '1px solid var(--exness-yellow)' : '1px solid #333', color: isCustomJson ? 'var(--exness-yellow)' : 'var(--text-muted)', padding: '6px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                                        style={{ background: isCustomJson ? 'rgba(212,175,55,0.1)' : 'transparent', border: isCustomJson ? '1px solid var(--fq-gold)' : '1px solid #333', color: isCustomJson ? 'var(--fq-gold)' : 'var(--text-muted)', padding: '6px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
                                     >
                                         Raw JSON Editor
                                     </button>
@@ -420,7 +420,7 @@ export const Strategies = () => {
                                                     max="200" 
                                                     value={period} 
                                                     onChange={e => setPeriod(Number(e.target.value))} 
-                                                    style={{ width: '100%', marginTop: '15px', accentColor: 'var(--exness-yellow)' }} 
+                                                    style={{ width: '100%', marginTop: '15px', accentColor: 'var(--fq-gold)' }} 
                                                 />
                                             </div>
                                         </div>
@@ -448,7 +448,7 @@ export const Strategies = () => {
                                                     max="100" 
                                                     value={threshold} 
                                                     onChange={e => setThreshold(Number(e.target.value))} 
-                                                    style={{ width: '100%', marginTop: '15px', accentColor: 'var(--exness-yellow)' }} 
+                                                    style={{ width: '100%', marginTop: '15px', accentColor: 'var(--fq-gold)' }} 
                                                 />
                                             </div>
                                             <div>
@@ -483,10 +483,10 @@ export const Strategies = () => {
                                 )}
 
                                 <button 
-                                    className="btn-exness btn-exness-primary" 
+                                    className="btn-fq btn-fq-primary" 
                                     onClick={handleCreate} 
                                     disabled={!modelName.trim()}
-                                    style={{ width: '100%', marginTop: '10px', padding: '12px', background: !modelName.trim() ? '#222' : 'var(--exness-yellow)', color: !modelName.trim() ? '#555' : '#000', cursor: !modelName.trim() ? 'not-allowed' : 'pointer' }}
+                                    style={{ width: '100%', marginTop: '10px', padding: '12px', background: !modelName.trim() ? '#222' : 'var(--fq-gold)', color: !modelName.trim() ? '#555' : '#000', cursor: !modelName.trim() ? 'not-allowed' : 'pointer' }}
                                 >
                                     Compile & Save Strategy
                                 </button>
@@ -495,9 +495,9 @@ export const Strategies = () => {
 
                         {/* Interactive Generated Code Preview Column */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <div className="glass-panel" style={{ padding: '25px', background: 'rgba(18,18,18,0.7)', border: '1px solid var(--border)', borderRadius: '6px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            <div className="fq-card" style={{ padding: '25px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-                                    <FileJson size={18} color="var(--exness-yellow)" />
+                                    <FileJson size={18} color="var(--fq-gold)" />
                                     <h4 style={{ fontWeight: '800', fontSize: '14px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Live Compilation Output</h4>
                                 </div>
                                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '15px' }}>This syntax-highlighted block compiles dynamically in real-time as you adjust parameters. This matches standard JSON model schema definitions consumed natively by our quantitative engine.</p>
@@ -513,9 +513,9 @@ export const Strategies = () => {
                     /* TAB 2: STRATEGY TESTER */
                     <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '30px', animation: 'fadeIn 0.4s' }}>
                         {/* Testing Configuration Sidebar */}
-                        <div className="glass-panel" style={{ padding: '25px', background: 'rgba(18,18,18,0.7)', border: '1px solid var(--border)', borderRadius: '6px', height: 'fit-content' }}>
+                        <div className="fq-card" style={{ padding: '25px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px', height: 'fit-content' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                <Sliders size={18} color="var(--exness-yellow)" />
+                                <Sliders size={18} color="var(--fq-gold)" />
                                 <h4 style={{ fontWeight: '700', fontSize: '15px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Tester Configurations</h4>
                             </div>
 
@@ -571,7 +571,7 @@ export const Strategies = () => {
                                         value={startBalance} 
                                         onChange={e => setStartBalance(Number(e.target.value))} 
                                         style={{ width: '100%', marginTop: '5px', padding: '12px', background: '#080808', color: '#fff', border: '1px solid var(--border)', borderRadius: '4px', outline: 'none', fontSize: '13px' }} 
-                                    />
+                                        />
                                 </div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
@@ -601,7 +601,7 @@ export const Strategies = () => {
                                     style={{
                                         width: '100%',
                                         marginTop: '15px',
-                                        background: isTesting || strategies.length === 0 ? '#222' : 'var(--exness-yellow)',
+                                        background: isTesting || strategies.length === 0 ? '#222' : 'var(--fq-gold)',
                                         color: isTesting || strategies.length === 0 ? '#666' : '#000',
                                         border: 'none',
                                         padding: '12px',
@@ -633,13 +633,13 @@ export const Strategies = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             {isTesting && (
                                 /* SIMULATION LOADING SCREEN */
-                                <div className="exness-card" style={{ padding: '60px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(18,18,18,0.7)', minHeight: '400px' }}>
+                                <div className="fq-card" style={{ padding: '60px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px', minHeight: '400px' }}>
                                     <div className="spinner-glow" style={{ position: 'relative', width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '30px' }}>
-                                        <RefreshCw size={40} color="var(--exness-yellow)" className="spin-animation" />
+                                        <RefreshCw size={40} color="var(--fq-gold)" className="spin-animation" />
                                     </div>
                                     <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}>HISTORICAL DATA ENGINE SIMULATION</h3>
                                     <div style={{ width: '100%', maxWidth: '400px', height: '4px', background: '#222', borderRadius: '2px', overflow: 'hidden', marginBottom: '15px' }}>
-                                        <div style={{ width: `${testProgress}%`, height: '100%', background: 'var(--exness-yellow)', transition: 'width 0.3s ease' }} />
+                                        <div style={{ width: `${testProgress}%`, height: '100%', background: 'var(--fq-gold)', transition: 'width 0.3s ease' }} />
                                     </div>
                                     <p style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic' }}>{testStatusText}</p>
                                 </div>
@@ -647,7 +647,7 @@ export const Strategies = () => {
 
                             {!isTesting && !testResult && (
                                 /* IDLE INITIAL SCREEN */
-                                <div className="exness-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 40px', background: 'rgba(18,18,18,0.7)', borderStyle: 'dashed', borderWidth: '1px', minHeight: '400px' }}>
+                                <div className="fq-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 40px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderStyle: 'dashed', borderRadius: '8px', minHeight: '400px' }}>
                                     <Award size={48} color="var(--text-muted)" style={{ marginBottom: '20px' }} />
                                     <h4 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>Simulation Sandboxed</h4>
                                     <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', maxWidth: '450px' }}>Select an algorithmic strategy and historical boundaries on the configurations panel, then launch the strategy tester.</p>
@@ -660,7 +660,7 @@ export const Strategies = () => {
                                     {/* Quick Stats Grid */}
                                     <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', gap: '15px' }}>
                                         {/* Cumulative PnL card */}
-                                        <div className="exness-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(135deg, #111 0%, rgba(38,166,154,0.1) 100%)', borderTop: '3px solid var(--success)' }}>
+                                        <div className="fq-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(135deg, var(--bg-card) 0%, rgba(38,166,154,0.1) 100%)', borderTop: '3px solid var(--success)', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)', borderBottom: '1px solid var(--border)', borderRadius: '8px' }}>
                                             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Simulated Profit/Loss</div>
                                             <div style={{ fontSize: '24px', fontWeight: 'bold', color: testResult.pnl >= 0 ? 'var(--success)' : 'var(--danger)', marginTop: '8px' }}>
                                                 {testResult.pnl >= 0 ? '+' : ''}${testResult.pnl.toLocaleString()}
@@ -671,32 +671,32 @@ export const Strategies = () => {
                                         </div>
 
                                         {/* Win Rate */}
-                                        <div className="exness-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', background: '#111' }}>
+                                        <div className="fq-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                                             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase' }}>Win Rate</div>
                                             <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'white', marginTop: '8px' }}>{testResult.winRate.toFixed(1)}%</div>
                                         </div>
 
                                         {/* Profit Factor */}
-                                        <div className="exness-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', background: '#111' }}>
+                                        <div className="fq-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                                             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase' }}>Profit Factor</div>
-                                            <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--exness-yellow)', marginTop: '8px' }}>{testResult.profitFactor.toFixed(2)}</div>
+                                            <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--fq-gold)', marginTop: '8px' }}>{testResult.profitFactor.toFixed(2)}</div>
                                         </div>
 
                                         {/* Max Drawdown */}
-                                        <div className="exness-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', background: '#111' }}>
+                                        <div className="fq-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                                             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase' }}>Max Drawdown</div>
                                             <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--danger)', marginTop: '8px' }}>-{testResult.maxDrawdown.toFixed(1)}%</div>
                                         </div>
 
                                         {/* Sharpe Ratio */}
-                                        <div className="exness-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', background: '#111' }}>
+                                        <div className="fq-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                                             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase' }}>Sharpe Ratio</div>
                                             <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--success)', marginTop: '8px' }}>{testResult.sharpeRatio.toFixed(2)}</div>
                                         </div>
                                     </div>
 
                                     {/* Backtest execution table */}
-                                    <div className="exness-card" style={{ padding: '0', overflow: 'hidden', background: '#111' }}>
+                                    <div className="fq-card" style={{ padding: '0', overflow: 'hidden', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                                         <div style={{ padding: '20px', borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.01)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#888', letterSpacing: '0.5px' }}>SIMULATED TRADES EXECUTIONS LEDGER ({testResult.totalTrades} Executions)</span>
                                             <span style={{ fontSize: '11px', color: 'var(--success)', fontWeight: 'bold' }}>• COMPLETED DATA</span>
@@ -719,7 +719,7 @@ export const Strategies = () => {
                                                         <tr key={trade.id} style={{ borderBottom: '1px solid var(--border)', fontSize: '13px' }} className="hover-row">
                                                             <td style={{ padding: '12px 20px', color: 'var(--text-muted)' }}>#{trade.id}</td>
                                                             <td style={{ padding: '12px 20px' }}>
-                                                                <span style={{ 
+                                                                 <span style={{ 
                                                                     padding: '2px 6px', borderRadius: '2px', fontSize: '10px', fontWeight: 'bold',
                                                                     background: trade.tradeType === 'BUY' ? 'rgba(38,166,154,0.1)' : 'rgba(239,83,80,0.1)',
                                                                     color: trade.tradeType === 'BUY' ? 'var(--success)' : 'var(--danger)'
@@ -750,7 +750,7 @@ export const Strategies = () => {
                     /* TAB 3: LIVE AUTOMATOR / MANAGER */
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px', animation: 'fadeIn 0.4s' }}>
                         {strategies.map(s => (
-                            <div key={s.id} className="exness-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(18,18,18,0.7)', borderLeft: s.active ? '4px solid var(--success)' : '4px solid #444' }}>
+                            <div key={s.id} className="fq-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px', borderLeft: s.active ? '4px solid var(--success)' : '4px solid #444' }}>
                                 <div>
                                     <div style={{ fontWeight: 'bold', fontSize: '17px' }}>{s.name}</div>
                                     <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>{s.description}</div>
@@ -785,7 +785,7 @@ export const Strategies = () => {
                             </div>
                         ))}
                         {strategies.length === 0 && (
-                            <div className="exness-card" style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                            <div className="fq-card" style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                                 No algorithmic models created yet. Design your first model in the **Strategy Builder** tab.
                             </div>
                         )}

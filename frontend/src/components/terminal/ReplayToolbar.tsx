@@ -27,7 +27,7 @@ export const ReplayToolbar: React.FC<ReplayToolbarProps> = ({ isPlaying, onToggl
                 <Rewind size={16} />
             </button>
             
-            <button onClick={onTogglePlay} style={{ background: 'transparent', border: 'none', color: 'var(--exness-yellow)', cursor: 'pointer', padding: '6px', display: 'flex', alignItems: 'center' }} title={isPlaying ? "Pause Replay" : "Play Replay"}>
+            <button onClick={onTogglePlay} style={{ background: 'transparent', border: 'none', color: 'var(--fq-gold)', cursor: 'pointer', padding: '6px', display: 'flex', alignItems: 'center' }} title={isPlaying ? "Pause Replay" : "Play Replay"}>
                 {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
             </button>
             

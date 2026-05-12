@@ -31,6 +31,16 @@ public class WebSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(exception -> exception
                 .authenticationEntryPoint((request, response, authException) -> {
+                    String origin = request.getHeader("Origin");
+                    if (origin != null && (origin.contains("localhost") || origin.contains("127.0.0.1") || origin.contains("vercel.app") || origin.contains("onrender.com"))) {
+                        response.setHeader("Access-Control-Allow-Origin", origin);
+                    } else {
+                        response.setHeader("Access-Control-Allow-Origin", "https://forex-quant-frontend.onrender.com");
+                    }
+                    response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                    response.setHeader("Access-Control-Allow-Headers", "*");
+                    response.setHeader("Access-Control-Allow-Credentials", "true");
+                    
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
                     response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + authException.getMessage() + "\"}");

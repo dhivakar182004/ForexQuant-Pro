@@ -53,18 +53,36 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        var userOpt = userRepository.findByEmailOrPhoneNumber(loginRequest.getEmail(), loginRequest.getEmail());
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            if (user.getPassword() != null && user.getPassword().equals(loginRequest.getPassword())) {
-                boolean isFullyAuthenticated = !user.isTotpEnabled();
-                String jwt = jwtUtils.generateJwtTokenFromEmail(user.getEmail(), isFullyAuthenticated);
-                return ResponseEntity.ok(Map.of("token", jwt, "requiresTotp", user.isTotpEnabled()));
-            } else {
-                return ResponseEntity.status(401).body(new MessageResponse("Error: Invalid password!"));
+        try {
+            String reqEmail = loginRequest != null ? loginRequest.getEmail() : "null";
+            String reqPass = loginRequest != null ? loginRequest.getPassword() : "null";
+            System.out.println("[AUTH DIAGNOSTIC] signin request email: '" + reqEmail + "'");
+            System.out.println("[AUTH DIAGNOSTIC] signin request password length: " + (reqPass != null ? reqPass.length() : 0));
+            
+            var userOpt = userRepository.findByEmailOrPhoneNumber(reqEmail, reqEmail);
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                String dbPass = user.getPassword();
+                System.out.println("[AUTH DIAGNOSTIC] DB user found email: '" + user.getEmail() + "'");
+                System.out.println("[AUTH DIAGNOSTIC] DB user password length: " + (dbPass != null ? dbPass.length() : 0));
+                
+                if (dbPass != null && dbPass.equals(reqPass)) {
+                    System.out.println("[AUTH DIAGNOSTIC] PASSWORDS MATCH SUCCESS!");
+                    boolean isFullyAuthenticated = !user.isTotpEnabled();
+                    String jwt = jwtUtils.generateJwtTokenFromEmail(user.getEmail(), isFullyAuthenticated);
+                    return ResponseEntity.ok(Map.of("token", jwt, "requiresTotp", user.isTotpEnabled()));
+                } else {
+                    System.out.println("[AUTH DIAGNOSTIC] PASSWORDS MISMATCH! req: '" + reqPass + "' vs db: '" + dbPass + "'");
+                    return ResponseEntity.status(401).body(new MessageResponse("Error: Invalid password!"));
+                }
             }
+            System.out.println("[AUTH DIAGNOSTIC] User not found: '" + reqEmail + "'");
+            return ResponseEntity.status(404).body(new MessageResponse("Error: User not found!"));
+        } catch (Exception e) {
+            System.err.println("[AUTH DIAGNOSTIC ERROR] Error in authenticateUser: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
-        return ResponseEntity.status(404).body(new MessageResponse("Error: User not found!"));
     }
 
     @PostMapping("/request-otp")

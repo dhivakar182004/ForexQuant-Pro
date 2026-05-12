@@ -148,7 +148,7 @@ export const TradeHistory = () => {
                         disabled={trades.length === 0}
                         style={{
                             marginTop: '15px',
-                            background: 'var(--exness-yellow)',
+                            background: 'var(--fq-gold)',
                             color: '#000',
                             border: 'none',
                             padding: '8px 16px',
@@ -164,15 +164,15 @@ export const TradeHistory = () => {
                     </button>
                 </div>
                 <div style={{ display: 'flex', gap: '15px' }}>
-                    <div className="glass-panel" style={{ padding: '15px 25px', textAlign: 'center' }}>
+                    <div className="fq-card" style={{ padding: '15px 25px', textAlign: 'center' }}>
                         <div style={{ color: 'var(--text-muted)', fontSize: '11px', textTransform: 'uppercase', marginBottom: '5px' }}>Win Rate</div>
-                        <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--primary)' }}>{winRate}%</div>
+                        <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--fq-gold)' }}>{winRate}%</div>
                     </div>
-                    <div className="glass-panel" style={{ padding: '15px 25px', textAlign: 'center' }}>
+                    <div className="fq-card" style={{ padding: '15px 25px', textAlign: 'center' }}>
                         <div style={{ color: 'var(--text-muted)', fontSize: '11px', textTransform: 'uppercase', marginBottom: '5px' }}>Profit Factor</div>
                         <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'white' }}>{profitFactor}</div>
                     </div>
-                    <div className="glass-panel" style={{ padding: '15px 25px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div className="fq-card" style={{ padding: '15px 25px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
                         <div style={{ color: 'var(--text-muted)', fontSize: '11px', textTransform: 'uppercase', marginBottom: '5px' }}>Total PnL</div>
                         <div style={{ fontSize: '20px', fontWeight: 'bold', color: totalPnL >= 0 ? 'var(--success)' : 'var(--danger)' }}>
                             {totalPnL >= 0 ? '+' : ''}${totalPnL.toLocaleString()}
@@ -181,15 +181,15 @@ export const TradeHistory = () => {
                 </div>
             </div>
 
-            <div className="glass-panel" style={{ padding: '20px', marginBottom: '20px', height: '300px' }}>
+            <div className="fq-card" style={{ padding: '20px', marginBottom: '20px', height: '300px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
                     <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#888' }}>EQUITY CURVE (CUMULATIVE PERFORMANCE)</span>
-                    <span style={{ fontSize: '11px', color: 'var(--primary)' }}>• REAL-TIME DATA</span>
+                    <span style={{ fontSize: '11px', color: 'var(--fq-gold)' }}>• REAL-TIME DATA</span>
                 </div>
                 <div ref={chartContainerRef} style={{ width: '100%', height: '240px' }} />
             </div>
             
-            <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
+            <div className="fq-card" style={{ padding: '0', overflow: 'hidden' }}>
                 <div style={{ padding: '20px', borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
                     <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#888' }}>EXECUTION LOG</span>
                 </div>
@@ -223,10 +223,10 @@ export const TradeHistory = () => {
                                 <td style={{ padding: '15px 20px', color: '#ccc', fontSize: '13px' }}>{formatTime(t.entryTime)}</td>
                                 <td style={{ padding: '15px 20px', fontFamily: 'monospace' }}>{t.entryPrice?.toFixed(5)}</td>
                                 <td style={{ padding: '15px 20px', color: '#ccc', fontSize: '13px' }}>
-                                    {t.exitTime ? formatTime(t.exitTime) : <span style={{ color: 'var(--primary)', fontSize: '11px' }}>--</span>}
+                                    {t.exitTime ? formatTime(t.exitTime) : <span style={{ color: 'var(--fq-gold)', fontSize: '11px' }}>--</span>}
                                 </td>
                                 <td style={{ padding: '15px 20px', fontFamily: 'monospace' }}>
-                                    {t.exitPrice ? t.exitPrice.toFixed(5) : <span style={{ color: 'var(--primary)', fontSize: '11px' }}>● ACTIVE</span>}
+                                    {t.exitPrice ? t.exitPrice.toFixed(5) : <span style={{ color: 'var(--fq-gold)', fontSize: '11px' }}>● ACTIVE</span>}
                                 </td>
                                 <td style={{ padding: '15px 20px', textAlign: 'right', color: t.pnl >= 0 ? 'var(--success)' : 'var(--danger)', fontWeight: 'bold', fontSize: '16px', fontFamily: 'monospace' }}>
                                     {t.pnl === null ? '--' : (t.pnl >= 0 ? `+${t.pnl.toFixed(2)}` : `${t.pnl.toFixed(2)}`)}

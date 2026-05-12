@@ -57,13 +57,13 @@ export const Login = () => {
       {/* Header */}
       <div style={{ padding: '40px', textAlign: 'center' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '32px', height: '32px', background: 'var(--exness-yellow)', borderRadius: '2px' }}></div>
+              <div style={{ width: '32px', height: '32px', background: 'var(--fq-gold)', borderRadius: '2px' }}></div>
               <span style={{ fontWeight: '700', fontSize: '28px', letterSpacing: '-0.5px' }}>ForexQuant Pro</span>
           </div>
       </div>
 
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '100px' }}>
-        <div className="exness-card animate-up" style={{ width: '400px', padding: '40px' }}>
+        <div className="fq-card animate-up" style={{ width: '400px', padding: '40px' }}>
           <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '8px' }}>Sign in</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '32px' }}>Enter your credentials to continue to Terminal</p>
           
@@ -97,7 +97,7 @@ export const Login = () => {
                     style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', padding: '12px', borderRadius: '4px', color: '#fff' }} 
                   />
                 </div>
-                <button onClick={handleLogin} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Continue</button>
+                <button onClick={handleLogin} className="btn-fq btn-fq-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Continue</button>
               </>
             ) : (
               <>
@@ -116,10 +116,10 @@ export const Login = () => {
                 )}
                 
                 {!otpSent ? (
-                  <button onClick={handleSendOtp} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Send Verification Code</button>
+                  <button onClick={handleSendOtp} className="btn-fq btn-fq-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Send Verification Code</button>
                 ) : (
                   <>
-                    <button onClick={handleLoginOtp} className="btn-exness btn-exness-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Verify and Continue</button>
+                    <button onClick={handleLoginOtp} className="btn-fq btn-fq-primary" style={{ width: '100%', padding: '14px', marginTop: '10px' }}>Verify and Continue</button>
                     {devOtpMessage && (
                       <div style={{ marginTop: '15px', padding: '12px', background: 'rgba(0, 200, 83, 0.1)', color: 'var(--success)', borderRadius: '4px', textAlign: 'center', fontSize: '13px', border: '1px solid var(--success)', fontWeight: '600' }}>
                         {devOtpMessage}
@@ -132,7 +132,7 @@ export const Login = () => {
             
             <button 
               onClick={() => { setIsOtpMode(!isOtpMode); setOtpSent(false); setOtpCode(''); }} 
-              style={{ background: 'none', border: 'none', color: 'var(--exness-yellow)', cursor: 'pointer', fontSize: '13px', fontWeight: '500', marginTop: '10px' }}
+              style={{ background: 'none', border: 'none', color: 'var(--fq-gold)', cursor: 'pointer', fontSize: '13px', fontWeight: '500', marginTop: '10px' }}
             >
               {isOtpMode ? "Sign in with password" : "Sign in with phone code"}
             </button>
@@ -140,7 +140,7 @@ export const Login = () => {
           
           <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--border)', textAlign: 'center' }}>
             <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Not a member? </span>
-            <a href="/register" style={{ color: 'var(--exness-yellow)', textDecoration: 'none', fontSize: '14px', fontWeight: '600' }}>Create an account</a>
+            <a href="/register" style={{ color: 'var(--fq-gold)', textDecoration: 'none', fontSize: '14px', fontWeight: '600' }}>Create an account</a>
           </div>
         </div>
       </div>

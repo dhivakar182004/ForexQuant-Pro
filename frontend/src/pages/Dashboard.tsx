@@ -316,22 +316,22 @@ export const Dashboard = () => {
                 <div className="grid-cell" style={{ borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: '600', fontSize: '14px' }}>Instruments</span>
-                        <span style={{ color: 'var(--exness-yellow)', fontSize: '12px', cursor: 'pointer' }}>Edit</span>
+                        <span style={{ color: 'var(--fq-gold)', fontSize: '12px', cursor: 'pointer' }}>Edit</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
                         {Object.keys(prices).map(symbol => {
-                            const data = prices[symbol];
+                            const data = prices[symbol] || { value: 1.00, change: 0.0, trend: 'up' };
                             const isUp = data.trend === 'up';
                             const color = isUp ? 'var(--success)' : 'var(--danger)';
                             const sign = isUp ? '+' : '';
                             const decimals = symbol.includes('JPY') ? 3 : symbol.includes('USD') && symbol !== 'XAUUSD' && symbol !== 'BTCUSD' ? 5 : 2;
                             return (
                                 <div key={symbol} 
-                                     onClick={() => { setCurrentSymbol(symbol); setCurrentPrice(prices[symbol].value); }}
-                                     className="exness-card" 
-                                     style={{ padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: symbol === currentSymbol ? 'var(--bg-hover)' : 'transparent', borderLeft: symbol === currentSymbol ? '3px solid var(--exness-yellow)' : '1px solid var(--border)' }}>
+                                     onClick={() => { setCurrentSymbol(symbol); setCurrentPrice((prices[symbol] || { value: 1.00 }).value); }}
+                                     className="fq-card" 
+                                     style={{ padding: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: symbol === currentSymbol ? 'var(--bg-hover)' : 'transparent', borderLeft: symbol === currentSymbol ? '3px solid var(--fq-gold)' : '1px solid var(--border)' }}>
                                     <div>
-                                        <div style={{ fontSize: '13px', fontWeight: '600', color: symbol === currentSymbol ? 'var(--exness-yellow)' : 'var(--text-main)' }}>{symbol}</div>
+                                        <div style={{ fontSize: '13px', fontWeight: '600', color: symbol === currentSymbol ? 'var(--fq-gold)' : 'var(--text-main)' }}>{symbol}</div>
                                         <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Forex • Live</div>
                                     </div>
                                     <div style={{ textAlign: 'right' }}>
@@ -355,60 +355,62 @@ export const Dashboard = () => {
                     } : { display: 'flex', flexDirection: 'column', flex: 1, minHeight: '600px', overflow: 'hidden' }
                 }>
                     <div className="grid-cell" style={{ position: 'relative', padding: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        <TradingViewChart 
-                            symbol={currentSymbol}
-                            mode={mode} 
-                            historicalData={historicalData} 
-                            onPriceUpdate={setCurrentPrice}
-                            replayIndex={replayIndex}
-                            livePrice={currentPrice}
-                            activeIndicators={activeIndicators}
-                        />
+                        <ErrorBoundary>
+                            <TradingViewChart 
+                                symbol={currentSymbol}
+                                mode={mode} 
+                                historicalData={historicalData} 
+                                onPriceUpdate={setCurrentPrice}
+                                replayIndex={replayIndex}
+                                livePrice={currentPrice}
+                                activeIndicators={activeIndicators}
+                            />
+                        </ErrorBoundary>
                         
                         {/* Top Left Overlay Controls */}
                         <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
-                            <div className="exness-card" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div className="fq-card" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <span style={{ fontWeight: '600' }}>{currentSymbol}</span>
                                 <span style={{ color: 'var(--success)' }}>{currentPrice.toFixed(currentSymbol.includes('JPY') ? 3 : 5)}</span>
                             </div>
                             
                             {/* Indicator Toggles */}
-                            <div className="exness-card" style={{ padding: '4px', background: 'rgba(0,0,0,0.8)', display: 'flex', gap: '4px' }}>
+                            <div className="fq-card" style={{ padding: '4px', background: 'rgba(0,0,0,0.8)', display: 'flex', gap: '4px' }}>
                                 <button 
                                     onClick={() => setActiveIndicators(prev => prev.includes('SMA20') ? prev.filter(i => i !== 'SMA20') : [...prev, 'SMA20'])}
-                                    style={{ background: activeIndicators.includes('SMA20') ? 'var(--exness-yellow)' : 'transparent', color: activeIndicators.includes('SMA20') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
+                                    style={{ background: activeIndicators.includes('SMA20') ? 'var(--fq-gold)' : 'transparent', color: activeIndicators.includes('SMA20') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
                                     SMA 20
                                 </button>
                                 <button 
                                     onClick={() => setActiveIndicators(prev => prev.includes('SMA50') ? prev.filter(i => i !== 'SMA50') : [...prev, 'SMA50'])}
-                                    style={{ background: activeIndicators.includes('SMA50') ? 'var(--exness-yellow)' : 'transparent', color: activeIndicators.includes('SMA50') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
+                                    style={{ background: activeIndicators.includes('SMA50') ? 'var(--fq-gold)' : 'transparent', color: activeIndicators.includes('SMA50') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
                                     SMA 50
                                 </button>
                                 <button 
                                     onClick={() => setActiveIndicators(prev => prev.includes('EMA9') ? prev.filter(i => i !== 'EMA9') : [...prev, 'EMA9'])}
-                                    style={{ background: activeIndicators.includes('EMA9') ? 'var(--exness-yellow)' : 'transparent', color: activeIndicators.includes('EMA9') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
+                                    style={{ background: activeIndicators.includes('EMA9') ? 'var(--fq-gold)' : 'transparent', color: activeIndicators.includes('EMA9') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
                                     EMA 9
                                 </button>
                                 <button 
                                     onClick={() => setActiveIndicators(prev => prev.includes('EMA21') ? prev.filter(i => i !== 'EMA21') : [...prev, 'EMA21'])}
-                                    style={{ background: activeIndicators.includes('EMA21') ? 'var(--exness-yellow)' : 'transparent', color: activeIndicators.includes('EMA21') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
+                                    style={{ background: activeIndicators.includes('EMA21') ? 'var(--fq-gold)' : 'transparent', color: activeIndicators.includes('EMA21') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
                                     EMA 21
                                 </button>
                                 <button 
                                     onClick={() => setActiveIndicators(prev => prev.includes('RSI14') ? prev.filter(i => i !== 'RSI14') : [...prev, 'RSI14'])}
-                                    style={{ background: activeIndicators.includes('RSI14') ? 'var(--exness-yellow)' : 'transparent', color: activeIndicators.includes('RSI14') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
+                                    style={{ background: activeIndicators.includes('RSI14') ? 'var(--fq-gold)' : 'transparent', color: activeIndicators.includes('RSI14') ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
                                     RSI 14
                                 </button>
                             </div>
 
                             {/* Timeframe Toggles */}
-                            <div className="exness-card" style={{ padding: '4px', background: 'rgba(0,0,0,0.8)', display: 'flex', gap: '4px', alignItems: 'center' }}>
+                            <div className="fq-card" style={{ padding: '4px', background: 'rgba(0,0,0,0.8)', display: 'flex', gap: '4px', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10px', color: '#888', padding: '0 4px', fontWeight: 'bold' }}>TF</span>
                                 {['1m', '5m', '15m', '1H', '1D'].map(tf => (
                                     <button 
                                         key={tf}
                                         onClick={() => setTimeframe(tf)}
-                                        style={{ background: timeframe === tf ? 'var(--exness-yellow)' : 'transparent', color: timeframe === tf ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
+                                        style={{ background: timeframe === tf ? 'var(--fq-gold)' : 'transparent', color: timeframe === tf ? '#000' : 'var(--text-muted)', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>
                                         {tf}
                                     </button>
                                 ))}
@@ -433,15 +435,15 @@ export const Dashboard = () => {
                                             setReplayIndex(50); 
                                             setIsReplaying(true); 
                                         }} 
-                                        className="btn-exness" 
+                                        className="btn-fq" 
                                         style={{ padding: '6px 12px', background: 'transparent', display: 'flex', alignItems: 'center', gap: '6px', borderLeft: '1px solid #333', borderRadius: 0 }} 
                                         title="Enter Replay Mode">
-                                        <Play size={16} fill="var(--exness-yellow)" />
-                                        <span style={{ color: 'var(--exness-yellow)', fontWeight: 600 }}>Replay</span>
+                                        <Play size={16} fill="var(--fq-gold)" />
+                                        <span style={{ color: 'var(--fq-gold)', fontWeight: 600 }}>Replay</span>
                                     </button>
                                 </div>
                             )}
-                            <button onClick={() => setIsFullscreen(!isFullscreen)} className="btn-exness" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }} title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Chart"}>
+                            <button onClick={() => setIsFullscreen(!isFullscreen)} className="btn-fq" style={{ padding: '6px 12px', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }} title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Chart"}>
                                 {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
                             </button>
                         </div>

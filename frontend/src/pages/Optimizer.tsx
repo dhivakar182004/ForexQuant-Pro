@@ -102,9 +102,9 @@ export const Optimizer = () => {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '30px' }}>
                     {/* Sweeper Configuration Sidebar */}
-                    <div className="glass-panel" style={{ padding: '25px', background: 'rgba(18,18,18,0.7)', border: '1px solid var(--border)', borderRadius: '6px', height: 'fit-content' }}>
+                    <div className="fq-card" style={{ padding: '25px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px', height: 'fit-content' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                            <Sliders size={18} color="var(--exness-yellow)" />
+                            <Sliders size={18} color="var(--fq-gold)" />
                             <h4 style={{ fontWeight: '700', fontSize: '14px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Optimizer Sweeps</h4>
                         </div>
 
@@ -173,7 +173,7 @@ export const Optimizer = () => {
                                 style={{ 
                                     width: '100%', 
                                     marginTop: '15px', 
-                                    background: isOptimizing ? '#222' : 'var(--exness-yellow)', 
+                                    background: isOptimizing ? '#222' : 'var(--fq-gold)', 
                                     color: isOptimizing ? '#555' : '#000', 
                                     border: 'none', 
                                     padding: '12px', 
@@ -205,11 +205,11 @@ export const Optimizer = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         {isOptimizing && (
                             /* RUNNING LOADING GRAPHICS */
-                            <div className="exness-card" style={{ padding: '60px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(18,18,18,0.7)', minHeight: '400px' }}>
-                                <RefreshCw size={40} color="var(--exness-yellow)" className="spin-animation" style={{ marginBottom: '25px' }} />
+                            <div className="fq-card" style={{ padding: '60px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px', minHeight: '400px' }}>
+                                <RefreshCw size={40} color="var(--fq-gold)" className="spin-animation" style={{ marginBottom: '25px' }} />
                                 <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>GRID OPTIMIZATION UNDERWAY</h3>
                                 <div style={{ width: '100%', maxWidth: '400px', height: '4px', background: '#222', borderRadius: '2px', overflow: 'hidden', marginBottom: '15px' }}>
-                                    <div style={{ width: `${optProgress}%`, height: '100%', background: 'var(--exness-yellow)', transition: 'width 0.3s ease' }} />
+                                    <div style={{ width: `${optProgress}%`, height: '100%', background: 'var(--fq-gold)', transition: 'width 0.3s ease' }} />
                                 </div>
                                 <p style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic' }}>{optStatus}</p>
                             </div>
@@ -217,7 +217,7 @@ export const Optimizer = () => {
 
                         {!isOptimizing && results.length === 0 && (
                             /* IDLE EMPTY SCREEN */
-                            <div className="exness-card" style={{ padding: '80px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(18,18,18,0.7)', borderStyle: 'dashed', borderWidth: '1px', minHeight: '400px' }}>
+                            <div className="fq-card" style={{ padding: '80px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-card)', borderStyle: 'dashed', borderWidth: '1px', border: '1px dashed var(--border)', borderRadius: '8px', minHeight: '400px' }}>
                                 <BarChart2 size={48} color="var(--text-muted)" style={{ marginBottom: '20px' }} />
                                 <h4 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>Parameters sweep standby</h4>
                                 <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', maxWidth: '450px' }}>Set sweep limits in the sidebar control panel and trigger optimization to evaluate model configurations.</p>
@@ -229,7 +229,7 @@ export const Optimizer = () => {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.5s ease' }}>
                                 
                                 {/* Dynamic SVG Column Chart block */}
-                                <div className="exness-card" style={{ padding: '25px', background: 'rgba(18,18,18,0.7)' }}>
+                                <div className="fq-card" style={{ padding: '25px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
                                         <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Parameter Sweep Performance (Profit Factor)</span>
                                         <span style={{ fontSize: '11px', color: 'var(--success)', fontWeight: 'bold' }}>• SWEEP RESOLVED</span>
@@ -245,7 +245,7 @@ export const Optimizer = () => {
                                             return (
                                                 <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
                                                     {/* Tooltip on hover */}
-                                                    <div style={{ fontSize: '10px', background: '#000', border: '1px solid #333', padding: '4px 8px', borderRadius: '4px', marginBottom: '4px', color: isIdeal ? 'var(--exness-yellow)' : '#fff', fontWeight: 'bold', opacity: 0.9 }}>
+                                                    <div style={{ fontSize: '10px', background: '#000', border: '1px solid #333', padding: '4px 8px', borderRadius: '4px', marginBottom: '4px', color: isIdeal ? 'var(--fq-gold)' : '#fff', fontWeight: 'bold', opacity: 0.9 }}>
                                                         {r.profitFactor.toFixed(2)}
                                                     </div>
                                                     
@@ -254,17 +254,17 @@ export const Optimizer = () => {
                                                         style={{ 
                                                             width: '100%', 
                                                             height: `${heightPercentage}%`, 
-                                                            background: isIdeal ? 'var(--exness-yellow)' : r.profitFactor > 1.5 ? 'var(--success)' : 'rgba(255,255,255,0.08)',
+                                                            background: isIdeal ? 'var(--fq-gold)' : r.profitFactor > 1.5 ? 'var(--success)' : 'rgba(255,255,255,0.08)',
                                                             borderRadius: '3px 3px 0 0',
                                                             transition: 'height 1s cubic-bezier(0.1, 0.8, 0.3, 1)',
-                                                            boxShadow: isIdeal ? '0 0 15px rgba(255,211,0,0.25)' : 'none',
+                                                            boxShadow: isIdeal ? '0 0 15px rgba(212,175,55,0.25)' : 'none',
                                                             cursor: 'pointer'
                                                         }} 
                                                         className="hover-highlight"
                                                     />
                                                     
                                                     {/* Parameter coordinate label */}
-                                                    <div style={{ fontSize: '10px', marginTop: '10px', color: isIdeal ? 'var(--exness-yellow)' : 'var(--text-muted)', fontFamily: 'monospace', fontWeight: isIdeal ? 'bold' : 'normal' }}>
+                                                    <div style={{ fontSize: '10px', marginTop: '10px', color: isIdeal ? 'var(--fq-gold)' : 'var(--text-muted)', fontFamily: 'monospace', fontWeight: isIdeal ? 'bold' : 'normal' }}>
                                                         P-{r.parameter}
                                                     </div>
                                                 </div>
@@ -277,9 +277,9 @@ export const Optimizer = () => {
                                 <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px' }}>
                                     {/* Optimal Parameter details card */}
                                     {bestParam && (
-                                        <div className="exness-card" style={{ padding: '25px', background: 'linear-gradient(135deg, #111 0%, rgba(255,211,0,0.05) 100%)', borderTop: '3px solid var(--exness-yellow)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                        <div className="fq-card" style={{ padding: '25px', background: 'linear-gradient(135deg, var(--bg-card) 0%, rgba(212,175,55,0.05) 100%)', borderTop: '3px solid var(--fq-gold)', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)', borderBottom: '1px solid var(--border)', borderRadius: '8px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                             <div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--exness-yellow)', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--fq-gold)', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                                     <Flame size={14} /> Optimal Parameter Isolated
                                                 </div>
                                                 <h3 style={{ fontSize: '24px', fontWeight: '800', marginTop: '12px' }}>Value: {bestParam.parameter}</h3>
@@ -297,19 +297,19 @@ export const Optimizer = () => {
                                                 </div>
                                                 <div>
                                                     <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>SHARPE RATIO</div>
-                                                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--exness-yellow)', marginTop: '3px' }}>{bestParam.sharpeRatio.toFixed(2)}</div>
+                                                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--fq-gold)', marginTop: '3px' }}>{bestParam.sharpeRatio.toFixed(2)}</div>
                                                 </div>
                                             </div>
                                         </div>
                                     )}
 
                                     {/* Parameter Recommendation Matrix */}
-                                    <div className="exness-card" style={{ padding: '25px', background: '#111' }}>
+                                    <div className="fq-card" style={{ padding: '25px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                                         <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#888', letterSpacing: '0.5px', marginBottom: '15px', textTransform: 'uppercase' }}>Parameters Fit Matrix</div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '180px', overflowY: 'auto' }}>
                                             {results.map((r, i) => (
-                                                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#0a0a0a', borderRadius: '4px', borderLeft: bestParam && r.parameter === bestParam.parameter ? '3px solid var(--exness-yellow)' : '1px solid transparent' }}>
-                                                    <span style={{ fontSize: '12px', fontWeight: '600', color: bestParam && r.parameter === bestParam.parameter ? 'var(--exness-yellow)' : 'white' }}>Sweep Value: {r.parameter}</span>
+                                                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#0a0a0a', borderRadius: '4px', borderLeft: bestParam && r.parameter === bestParam.parameter ? '3px solid var(--fq-gold)' : '1px solid transparent' }}>
+                                                    <span style={{ fontSize: '12px', fontWeight: '600', color: bestParam && r.parameter === bestParam.parameter ? 'var(--fq-gold)' : 'white' }}>Sweep Value: {r.parameter}</span>
                                                     <div style={{ display: 'flex', gap: '15px', fontSize: '11px', fontFamily: 'monospace' }}>
                                                         <span style={{ color: 'var(--text-muted)' }}>PF: <b style={{ color: r.profitFactor > 1.5 ? 'var(--success)' : '#fff' }}>{r.profitFactor.toFixed(2)}</b></span>
                                                         <span style={{ color: 'var(--text-muted)' }}>WIN: <b style={{ color: '#fff' }}>{r.winRate.toFixed(1)}%</b></span>

@@ -74,18 +74,18 @@ export const History: React.FC = () => {
           <p className="text-gray-400">Institutional trade tracking and performance metrics.</p>
         </div>
         <div className="flex gap-4">
-          <div className="glass-panel p-4 px-6">
+          <div className="fq-card p-4 px-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
             <span className="text-gray-400 text-sm block">Total Equity</span>
             <span className="text-xl font-mono text-green-400 font-bold">$10,075.00</span>
           </div>
-          <div className="glass-panel p-4 px-6">
+          <div className="fq-card p-4 px-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
             <span className="text-gray-400 text-sm block">Win Rate</span>
             <span className="text-xl font-mono text-blue-400 font-bold">66.7%</span>
           </div>
         </div>
       </div>
 
-      <div className="glass-panel overflow-hidden">
+      <div className="fq-card overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-white/5 border-b border-white/10 uppercase text-xs tracking-wider font-semibold">

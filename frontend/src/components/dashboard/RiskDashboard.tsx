@@ -83,76 +83,76 @@ export const RiskDashboard: React.FC<RiskDashboardProps> = ({ trades, onCloseTra
   }, [trades]);
 
   return (
-    <div className="risk-dashboard" style={{ 
+    <div className="fq-card" style={{ 
       padding: '24px', 
-      backgroundColor: 'rgba(30, 34, 45, 0.7)', 
+      backgroundColor: 'var(--bg-card)', 
       backdropFilter: 'blur(12px)',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--border)',
       color: '#fff', 
-      borderRadius: '16px',
-      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+      borderRadius: '8px',
+      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.4)'
     }}>
-      <h3 style={{ fontWeight: 600, letterSpacing: '-0.02em', marginBottom: '20px' }}>Risk Management & Analytics</h3>
-      <div style={{ display: 'flex', gap: '2rem', marginTop: '15px' }}>
+      <h3 style={{ fontWeight: 600, letterSpacing: '-0.02em', marginBottom: '20px', color: 'var(--fq-gold)' }}>Risk Management & Analytics</h3>
+      <div style={{ display: 'flex', gap: '2rem', marginTop: '15px', flexWrap: 'wrap' }}>
         <div>
-          <span style={{ color: '#8b8e96' }}>Total P&L</span>
-          <h4 style={{ color: metrics.totalPnl >= 0 ? '#26a69a' : '#ef5350' }}>
+          <span style={{ color: '#8b8e96', fontSize: '11px', display: 'block', textTransform: 'uppercase' }}>Total P&L</span>
+          <h4 style={{ color: metrics.totalPnl >= 0 ? 'var(--success)' : 'var(--danger)', fontSize: '20px', fontWeight: '700' }}>
             ${metrics.totalPnl.toFixed(2)}
           </h4>
         </div>
         <div>
-          <span style={{ color: '#8b8e96' }}>Win Rate</span>
-          <h4>{metrics.winRate.toFixed(1)}%</h4>
+          <span style={{ color: '#8b8e96', fontSize: '11px', display: 'block', textTransform: 'uppercase' }}>Win Rate</span>
+          <h4 style={{ fontSize: '20px', fontWeight: '700', color: '#fff' }}>{metrics.winRate.toFixed(1)}%</h4>
         </div>
         <div>
-          <span style={{ color: '#8b8e96' }}>Max Drawdown</span>
-          <h4 style={{ color: '#ef5350' }}>${metrics.maxDrawdown.toFixed(2)}</h4>
+          <span style={{ color: '#8b8e96', fontSize: '11px', display: 'block', textTransform: 'uppercase' }}>Max Drawdown</span>
+          <h4 style={{ color: 'var(--danger)', fontSize: '20px', fontWeight: '700' }}>${metrics.maxDrawdown.toFixed(2)}</h4>
         </div>
         <div>
-          <span style={{ color: '#8b8e96' }}>Profit Factor</span>
-          <h4>{metrics.profitFactor === Number.POSITIVE_INFINITY ? '∞' : metrics.profitFactor.toFixed(2)}</h4>
+          <span style={{ color: '#8b8e96', fontSize: '11px', display: 'block', textTransform: 'uppercase' }}>Profit Factor</span>
+          <h4 style={{ fontSize: '20px', fontWeight: '700', color: '#fff' }}>{metrics.profitFactor === Number.POSITIVE_INFINITY ? '∞' : metrics.profitFactor.toFixed(2)}</h4>
         </div>
         <div>
-          <span style={{ color: '#8b8e96' }}>Sharpe Ratio</span>
-          <h4>{metrics.sharpeRatio.toFixed(2)}</h4>
+          <span style={{ color: '#8b8e96', fontSize: '11px', display: 'block', textTransform: 'uppercase' }}>Sharpe Ratio</span>
+          <h4 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--fq-gold)' }}>{metrics.sharpeRatio.toFixed(2)}</h4>
         </div>
       </div>
 
-      <h4 style={{ marginTop: '30px' }}>Trade Logger</h4>
-      <table className="table table-dark table-striped" style={{ width: '100%', marginTop: '15px' }}>
+      <h4 style={{ marginTop: '30px', fontSize: '14px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Trade Logger</h4>
+      <table className="table table-dark table-striped" style={{ width: '100%', marginTop: '15px', borderCollapse: 'collapse', fontSize: '13px' }}>
         <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Type</th>
-            <th>Entry Time</th>
-            <th>Entry Price</th>
-            <th>Exit Price</th>
-            <th>Size</th>
-            <th>P&L</th>
-            <th>Action</th>
+          <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+            <th style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>Symbol</th>
+            <th style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>Type</th>
+            <th style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>Entry Time</th>
+            <th style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>Entry Price</th>
+            <th style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>Exit Price</th>
+            <th style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>Size</th>
+            <th style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>P&L</th>
+            <th style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>Action</th>
           </tr>
         </thead>
         <tbody>
           {trades.map(t => (
-            <tr key={t.id}>
-              <td>{t.symbol}</td>
-              <td style={{ color: t.tradeType === 'BUY' ? '#26a69a' : '#ef5350' }}>{t.tradeType}</td>
-              <td>{formatTime(t.entryTime)}</td>
-              <td>{t.entryPrice?.toFixed(5)}</td>
-              <td>{t.exitPrice ? t.exitPrice.toFixed(5) : '-'}</td>
-              <td>{t.positionSize}</td>
-              <td style={{ color: (t.pnl || 0) >= 0 ? '#26a69a' : '#ef5350' }}>
-                {t.pnl ? t.pnl.toFixed(2) : '-'}
+            <tr key={t.id} style={{ borderBottom: '1px solid var(--border)' }}>
+              <td style={{ padding: '12px 8px', fontWeight: '600' }}>{t.symbol}</td>
+              <td style={{ padding: '12px 8px', color: t.tradeType === 'BUY' ? 'var(--success)' : 'var(--danger)', fontWeight: '600' }}>{t.tradeType}</td>
+              <td style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>{formatTime(t.entryTime)}</td>
+              <td style={{ padding: '12px 8px' }}>{t.entryPrice?.toFixed(5)}</td>
+              <td style={{ padding: '12px 8px' }}>{t.exitPrice ? t.exitPrice.toFixed(5) : '-'}</td>
+              <td style={{ padding: '12px 8px' }}>{t.positionSize}</td>
+              <td style={{ padding: '12px 8px', color: (t.pnl || 0) >= 0 ? 'var(--success)' : 'var(--danger)', fontWeight: '600' }}>
+                {t.pnl ? `${t.pnl >= 0 ? '+' : ''}${t.pnl.toFixed(2)}` : '-'}
               </td>
-              <td>
+              <td style={{ padding: '12px 8px' }}>
                 {!t.exitPrice && onCloseTrade && (
-                  <button onClick={() => onCloseTrade(t.id)} className="btn btn-danger btn-sm" style={{ padding: '2px 8px', fontSize: '12px' }}>Close</button>
+                  <button onClick={() => onCloseTrade(t.id)} className="btn-fq btn-fq-primary" style={{ padding: '4px 10px', fontSize: '11px', background: 'var(--danger)', color: '#fff', boxShadow: 'none' }}>Close</button>
                 )}
               </td>
             </tr>
           ))}
           {trades.length === 0 && (
-            <tr><td colSpan={7} style={{ textAlign: 'center' }}>No trades recorded yet.</td></tr>
+            <tr><td colSpan={8} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>No trades recorded yet.</td></tr>
           )}
         </tbody>
       </table>

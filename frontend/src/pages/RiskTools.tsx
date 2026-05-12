@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TopNavbar } from '../components/TopNavbar';
-import { Shield, Percent, Sliders, DollarSign, Activity, AlertTriangle, ArrowRight, Layers } from 'lucide-react';
+import { Shield, Percent, Sliders, DollarSign, Activity, AlertTriangle, ArrowRight, Layers, CheckCircle } from 'lucide-react';
 
 export const RiskTools = () => {
     // 1. Position Size Calculator States
@@ -73,9 +73,9 @@ export const RiskTools = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
                     
                     {/* Panel 1: Position Size & Leverage Calculator */}
-                    <div className="glass-panel" style={{ padding: '25px', background: 'rgba(18,18,18,0.7)', border: '1px solid var(--border)', borderRadius: '6px' }}>
+                    <div className="fq-card" style={{ padding: '25px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                            <Shield size={18} color="var(--exness-yellow)" />
+                            <Shield size={18} color="var(--fq-gold)" />
                             <h4 style={{ fontWeight: '700', fontSize: '15px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Position Sizer & Margin Engine</h4>
                         </div>
 
@@ -168,7 +168,7 @@ export const RiskTools = () => {
 
                             <div style={{ padding: '12px 15px', background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--border)', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Layers size={14} color="var(--exness-yellow)" />
+                                    <Layers size={14} color="var(--fq-gold)" />
                                     <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Estimated Broker Margin Requirement:</span>
                                 </div>
                                 <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', fontFamily: 'monospace' }}>
@@ -179,9 +179,9 @@ export const RiskTools = () => {
                     </div>
 
                     {/* Panel 2: Scenario Risk-Reward Simulator */}
-                    <div className="glass-panel" style={{ padding: '25px', background: 'rgba(18,18,18,0.7)', border: '1px solid var(--border)', borderRadius: '6px' }}>
+                    <div className="fq-card" style={{ padding: '25px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                            <Activity size={18} color="var(--exness-yellow)" />
+                            <Activity size={18} color="var(--fq-gold)" />
                             <h4 style={{ fontWeight: '700', fontSize: '15px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Risk-Reward Scenario Simulator</h4>
                         </div>
 

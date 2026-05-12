@@ -52,12 +52,12 @@ export const RiskRewardGraph: React.FC<RiskRewardGraphProps> = ({ trades }) => {
   const getY = (val: number) => height - padding - ((val - minY) / (maxY - minY)) * (height - padding - 20);
 
   return (
-    <div className="exness-card" style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', marginTop: '16px', position: 'relative' }}>
+    <div className="fq-card" style={{ padding: '16px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px', marginTop: '16px', position: 'relative' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
         <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
           R:R Performance Distribution
         </span>
-        <span style={{ fontSize: '10px', color: 'var(--exness-yellow)', fontWeight: 'bold' }}>
+        <span style={{ fontSize: '10px', color: 'var(--fq-gold)', fontWeight: 'bold' }}>
           LIVE BACKTEST
         </span>
       </div>
@@ -68,15 +68,15 @@ export const RiskRewardGraph: React.FC<RiskRewardGraphProps> = ({ trades }) => {
           <line x1={getX(minX)} y1={getY(0)} x2={getX(maxX)} y2={getY(0)} stroke="#2a2a2a" strokeWidth={1} />
           <line x1={getX(0)} y1={getY(minY)} x2={getX(0)} y2={getY(maxY)} stroke="#2a2a2a" strokeWidth={1} />
 
-          {/* R:R guideline slopes (Y = X, Y = 2X, Y = 3X) */}
+          {/* Grid slope slopes */}
           <line x1={getX(0)} y1={getY(0)} x2={getX(30)} y2={getY(30)} stroke="rgba(255,255,255,0.15)" strokeWidth={1} strokeDasharray="3 3" />
           <text x={getX(30) + 4} y={getY(30) + 4} fill="rgba(255,255,255,0.3)" fontSize={8}>1:1</text>
 
           <line x1={getX(0)} y1={getY(0)} x2={getX(20)} y2={getY(40)} stroke="rgba(0,200,83,0.15)" strokeWidth={1} strokeDasharray="3 3" />
           <text x={getX(20) - 10} y={getY(40) - 4} fill="rgba(0,200,83,0.4)" fontSize={8}>1:2</text>
 
-          <line x1={getX(0)} y1={getY(0)} x2={getX(15)} y2={getY(45)} stroke="var(--exness-yellow)" strokeOpacity={0.15} strokeWidth={1} strokeDasharray="3 3" />
-          <text x={getX(15) - 10} y={getY(45) - 6} fill="var(--exness-yellow)" fillOpacity={0.4} fontSize={8}>1:3</text>
+          <line x1={getX(0)} y1={getY(0)} x2={getX(15)} y2={getY(45)} stroke="var(--fq-gold)" strokeOpacity={0.15} strokeWidth={1} strokeDasharray="3 3" />
+          <text x={getX(15) - 10} y={getY(45) - 6} fill="var(--fq-gold)" fillOpacity={0.4} fontSize={8}>1:3</text>
 
           {/* Axis Labels */}
           <text x={width - 25} y={getY(0) + 12} fill="var(--text-muted)" fontSize={8} textAnchor="end">Risk (Pips)</text>
@@ -120,7 +120,7 @@ export const RiskRewardGraph: React.FC<RiskRewardGraphProps> = ({ trades }) => {
             boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
             whiteSpace: 'nowrap'
           }}>
-            <div style={{ fontWeight: 'bold', color: 'var(--exness-yellow)' }}>{hoveredTrade.symbol} ({hoveredTrade.tradeType})</div>
+            <div style={{ fontWeight: 'bold', color: 'var(--fq-gold)' }}>{hoveredTrade.symbol} ({hoveredTrade.tradeType})</div>
             <div style={{ color: '#fff' }}>Reward: {hoveredTrade.reward} pips</div>
             <div style={{ color: hoveredTrade.pnl >= 0 ? 'var(--success)' : 'var(--danger)', fontWeight: 'bold' }}>
               PnL: {hoveredTrade.pnl >= 0 ? '+' : ''}${hoveredTrade.pnl.toLocaleString()}
