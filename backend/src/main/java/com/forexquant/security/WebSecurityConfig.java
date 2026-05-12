@@ -48,7 +48,7 @@ public class WebSecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/**", "/error").permitAll()
                 .requestMatchers("/api/market/**").permitAll()
                 .requestMatchers("/ws-forex/**").permitAll()
                 .requestMatchers("/login/**", "/oauth2/**").permitAll()
