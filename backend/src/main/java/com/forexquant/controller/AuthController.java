@@ -79,15 +79,9 @@ public class AuthController {
             System.out.println("[AUTH DIAGNOSTIC] User not found: '" + reqEmail + "'");
             return ResponseEntity.status(404).body(new MessageResponse("Error: User not found!"));
         } catch (Exception e) {
-            java.io.StringWriter sw = new java.io.StringWriter();
-            java.io.PrintWriter pw = new java.io.PrintWriter(sw);
-            e.printStackTrace(pw);
-            String trace = sw.toString();
-            return ResponseEntity.status(500).body(java.util.Map.of(
-                "error", "Exception in signin handler",
-                "message", e.getMessage() != null ? e.getMessage() : "null",
-                "trace", trace
-            ));
+            System.err.println("[AUTH DIAGNOSTIC ERROR] Error in authenticateUser: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(new MessageResponse("Error: An unexpected internal error occurred. Please try again."));
         }
     }
 
