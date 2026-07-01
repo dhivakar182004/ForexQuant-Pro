@@ -12,7 +12,7 @@ echo [1/2] Starting Backend (Spring Boot)...
 start "ForexQuant Backend" cmd /k "cd /d %BASE_DIR%backend && mvnw.cmd spring-boot:run"
 
 echo [2/2] Starting Frontend (React + Vite)...
-start "ForexQuant Frontend" cmd /k "cd /d %BASE_DIR%frontend && npm run dev"
+start "ForexQuant Frontend" cmd /k "cd /d %BASE_DIR%frontend && cmd.exe /c npm run dev"
 
 echo.
 echo ==========================================
