@@ -214,7 +214,7 @@ export const Dashboard = () => {
 
             const startTimeMs = customStart ? new Date(customStart).getTime() : undefined;
             let url = `https://api.binance.com/api/v3/klines?symbol=${binanceSym}&interval=${binanceTf}&limit=1000`;
-            if (startTimeMs) {
+            if (startTimeMs && mode === 'replay') {
                 url += `&startTime=${startTimeMs}`;
             }
 
@@ -248,7 +248,7 @@ export const Dashboard = () => {
             if (tf === '1m') stepSeconds = 60;
             else if (tf === '5m') stepSeconds = 5 * 60;
             else if (tf === '15m') stepSeconds = 15 * 60;
-            else if (tf === '1H') step: 60 * 60;
+            else if (tf === '1H') stepSeconds = 60 * 60;
             else if (tf === '4H') stepSeconds = 4 * 60 * 60;
             else if (tf === '1D') stepSeconds = 24 * 60 * 60;
 

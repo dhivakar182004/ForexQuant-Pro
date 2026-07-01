@@ -292,19 +292,48 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({
     };
   }, [mode, symbol, historicalData, activeIndicators]);
 
+  const latestCandleRef = useRef<any>(null);
+
+  // Initialize latest candle when historical data loads
+  useEffect(() => {
+    if (historicalData && historicalData.length > 0) {
+      latestCandleRef.current = { ...historicalData[historicalData.length - 1] };
+    }
+  }, [historicalData]);
+
   // Handle Live Ticks
   useEffect(() => {
-    if (mode === 'live' && livePrice && historicalData && historicalData.length > 0 && seriesRef.current) {
-      const lastCandle = historicalData[historicalData.length - 1];
+    if (mode === 'live' && livePrice && latestCandleRef.current && seriesRef.current) {
+      const c = latestCandleRef.current;
+      const now = Math.floor(Date.now() / 1000);
+      
+      let stepSeconds = 15 * 60;
+      if (historicalData && historicalData.length >= 2) {
+          stepSeconds = historicalData[historicalData.length - 1].time - historicalData[historicalData.length - 2].time;
+      }
+      
+      // If current time crosses into the next candle period, spawn a new candle
+      if (now >= c.time + stepSeconds) {
+          const newTime = c.time + Math.floor((now - c.time) / stepSeconds) * stepSeconds;
+          latestCandleRef.current = {
+              time: newTime,
+              open: c.close,
+              high: Math.max(c.close, livePrice),
+              low: Math.min(c.close, livePrice),
+              close: livePrice
+          };
+      } else {
+          // Update the current candle
+          latestCandleRef.current.high = Math.max(c.high, livePrice);
+          latestCandleRef.current.low = Math.min(c.low, livePrice);
+          latestCandleRef.current.close = livePrice;
+      }
+
       try {
-        seriesRef.current.update({
-          time: lastCandle.time,
-          open: lastCandle.open,
-          high: Math.max(lastCandle.high, livePrice),
-          low: Math.min(lastCandle.low, livePrice),
-          close: livePrice
-        });
-      } catch (e) {}
+        seriesRef.current.update(latestCandleRef.current);
+      } catch (e) {
+        console.warn("Chart update error:", e);
+      }
     }
   }, [livePrice, mode, historicalData]);
 
