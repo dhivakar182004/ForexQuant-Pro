@@ -18,6 +18,9 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     @Autowired
     private JwtUtils jwtUtils;
 
+    @org.springframework.beans.factory.annotation.Value("${forexquant.frontend.url:http://localhost:5173}")
+    private String frontendBaseUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -28,7 +31,9 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String token = jwtUtils.generateJwtTokenFromEmail(oAuth2User.getInternalUser().getEmail(), !requiresTotp);
         
         String targetRoute = requiresTotp ? "/otp-verification" : "/dashboard";
-        String frontendUrl = "http://localhost:5174" + targetRoute + "?token=" + token;
+        
+        // Use dynamically configured frontend URL for production environments
+        String frontendUrl = frontendBaseUrl + targetRoute + "?token=" + token;
         getRedirectStrategy().sendRedirect(request, response, frontendUrl);
     }
 }

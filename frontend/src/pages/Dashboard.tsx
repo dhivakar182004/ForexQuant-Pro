@@ -112,61 +112,50 @@ export const Dashboard = () => {
         }
     }, [mode]);
 
-    // STOMP WebSocket Connection for True Real-Time Price Ingestion
+    // Binance WebSocket Connection for True Real-Time Price Ingestion
     useEffect(() => {
         if (mode !== 'live') return;
 
-        const stompClient = new Client({
-            webSocketFactory: () => new SockJS(`${API_BASE}/ws-forex`),
-            reconnectDelay: 5000,
-            debug: (str) => console.log('[STOMP]:', str),
-        });
-
-        stompClient.onConnect = () => {
-            console.log('[STOMP] Connected successfully to Forex real-time tick stream!');
-            stompClient.subscribe('/topic/candles', (message) => {
-                try {
-                    const candle = JSON.parse(message.body);
-                    const rawSym = candle.symbol;
-                    
-                    // Normalize standard forex symbols (e.g. OANDA:EUR_USD -> EURUSD)
-                    const cleanSym = rawSym.replace('OANDA:', '').replace('_', '').replace('/', '');
-                    const priceVal = parseFloat(candle.close);
-                    
-                    setPrices(prev => {
-                        if (!prev[cleanSym]) return prev;
-                        const prevVal = prev[cleanSym].value;
-                        const trend = priceVal >= prevVal ? 'up' : 'down';
-                        const percentChange = prevVal > 0 ? ((priceVal - prevVal) / prevVal) * 100 : 0;
-                        
-                        return {
-                            ...prev,
-                            [cleanSym]: {
-                                value: priceVal,
-                                change: percentChange !== 0 ? percentChange : prev[cleanSym].change,
-                                trend: trend as any
-                            }
-                        };
-                    });
-
-                    // Update currentPrice if active symbol is ticked
-                    if (cleanSym === currentSymbol) {
-                        setCurrentPrice(priceVal);
-                    }
-                } catch (e) {
-                    console.error('[STOMP] error parsing live candle:', e);
-                }
-            });
+        const mappings = {
+            'EURUSD': 'eurusdt',
+            'GBPUSD': 'gbpusdt',
+            'USDJPY': 'usdtjpy',
+            'XAUUSD': 'paxgusdt',
+            'BTCUSD': 'btcusdt'
         };
+        const streamSym = (mappings as any)[currentSymbol] || 'btcusdt';
+        
+        const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${streamSym}@ticker`);
 
-        stompClient.onStompError = (frame) => {
-            console.error('[STOMP] Broker error:', frame.headers['message']);
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                const priceVal = parseFloat(data.c); // current close price
+                
+                setPrices(prev => {
+                    if (!prev[currentSymbol]) return prev;
+                    const prevVal = prev[currentSymbol].value;
+                    const trend = priceVal >= prevVal ? 'up' : 'down';
+                    const percentChange = parseFloat(data.P); // price change percent from Binance
+                    
+                    return {
+                        ...prev,
+                        [currentSymbol]: {
+                            value: priceVal,
+                            change: percentChange,
+                            trend: trend as any
+                        }
+                    };
+                });
+
+                setCurrentPrice(priceVal);
+            } catch (e) {
+                console.error('Binance WS error:', e);
+            }
         };
-
-        stompClient.activate();
 
         return () => {
-            stompClient.deactivate();
+            ws.close();
         };
     }, [mode, currentSymbol]);
 
@@ -211,78 +200,77 @@ export const Dashboard = () => {
         try {
             const tf = customTimeframe || timeframe;
             
-            const startTimeMs = customStart ? new Date(customStart).getTime() : undefined;
+            const mappings = {
+                'EURUSD': 'EURUSDT',
+                'GBPUSD': 'GBPUSDT',
+                'USDJPY': 'USDTJPY',
+                'XAUUSD': 'PAXGUSDT',
+                'BTCUSD': 'BTCUSDT'
+            };
+            const binanceSym = (mappings as any)[currentSymbol] || 'BTCUSDT';
+            
+            const tfMap: Record<string, string> = { '1m':'1m', '5m':'5m', '15m':'15m', '1H':'1h', '4H':'4h', '1D':'1d' };
+            const binanceTf = tfMap[tf] || '15m';
 
-            let url = `${API_BASE}/api/market/history?symbol=${currentSymbol}&timeframe=${tf}`;
+            const startTimeMs = customStart ? new Date(customStart).getTime() : undefined;
+            let url = `https://api.binance.com/api/v3/klines?symbol=${binanceSym}&interval=${binanceTf}&limit=1000`;
             if (startTimeMs) {
                 url += `&startTime=${startTimeMs}`;
             }
 
-            let fetchedData: any[] = [];
             try {
                 const res = await axios.get(url);
                 if (res.data && res.data.length > 0) {
-                    fetchedData = res.data.map((k: any) => ({
-                        time: Math.floor(k[0] / 1000),
+                    const realData = res.data.map((k: any) => ({
+                        time: Math.floor(k[0] / 1000), // Open time in seconds
                         open: Number(parseFloat(k[1])),
                         high: Number(parseFloat(k[2])),
                         low: Number(parseFloat(k[3])),
                         close: Number(parseFloat(k[4]))
                     }));
+                    
+                    setHistoricalData(realData);
+                    if (realData.length > 0) {
+                        setCurrentPrice(realData[realData.length - 1].close);
+                    }
+                    return; // Success!
                 }
             } catch (err) {
-                console.warn("Backend market history proxy failed, falling back to local simulation.", err);
+                console.warn("Binance real data fetch failed", err);
             }
 
-            if (fetchedData.length > 0) {
-                const uniqueData = [];
-                const seenTimes = new Set();
-                for (let c of fetchedData) {
-                    if (!seenTimes.has(c.time)) {
-                        seenTimes.add(c.time);
-                        uniqueData.push(c);
-                    }
-                }
-                uniqueData.sort((a, b) => a.time - b.time);
-                setHistoricalData(uniqueData);
-                if (uniqueData.length > 0) {
-                    setCurrentPrice(uniqueData[uniqueData.length - 1].close);
-                }
-            } else {
-                // Generate realistic mock history so Replay ALWAYS works
-                const mockData = [];
-                let basePrice = currentPrice || 1.1000;
-                let startTime = customStart ? new Date(customStart).getTime() / 1000 : Date.now() / 1000 - (500 * 15 * 60);
+            // Fallback mock generation if everything fails
+            const mockData = [];
+            let basePrice = currentPrice || 1.1000;
+            let startTime = customStart ? new Date(customStart).getTime() / 1000 : Date.now() / 1000 - (500 * 15 * 60);
+            
+            let stepSeconds = 15 * 60;
+            if (tf === '1m') stepSeconds = 60;
+            else if (tf === '5m') stepSeconds = 5 * 60;
+            else if (tf === '15m') stepSeconds = 15 * 60;
+            else if (tf === '1H') step: 60 * 60;
+            else if (tf === '4H') stepSeconds = 4 * 60 * 60;
+            else if (tf === '1D') stepSeconds = 24 * 60 * 60;
+
+            for (let i = 0; i < 500; i++) {
+                const volatility = currentSymbol.includes('BTC') ? 50 : currentSymbol.includes('XAU') ? 2 : 0.002;
+                const open = basePrice;
+                const close = basePrice + (Math.random() - 0.5) * volatility;
+                const high = Math.max(open, close) + Math.random() * (volatility / 2);
+                const low = Math.min(open, close) - Math.random() * (volatility / 2);
                 
-                let stepSeconds = 15 * 60; // default 15m
-                if (tf === '1m') stepSeconds = 60;
-                else if (tf === '5m') stepSeconds = 5 * 60;
-                else if (tf === '15m') stepSeconds = 15 * 60;
-                else if (tf === '1H') stepSeconds = 60 * 60;
-                else if (tf === '4H') stepSeconds = 4 * 60 * 60;
-                else if (tf === '1D') stepSeconds = 24 * 60 * 60;
-
-                for (let i = 0; i < 500; i++) {
-                    const volatility = currentSymbol.includes('BTC') ? 50 : currentSymbol.includes('XAU') ? 2 : 0.002;
-                    const open = basePrice;
-                    const close = basePrice + (Math.random() - 0.5) * volatility;
-                    const high = Math.max(open, close) + Math.random() * (volatility / 2);
-                    const low = Math.min(open, close) - Math.random() * (volatility / 2);
-                    
-                    mockData.push({
-                        time: Math.floor(startTime + (i * stepSeconds)), // dynamic increments
-                        open: Number(open.toFixed(5)), 
-                        high: Number(high.toFixed(5)), 
-                        low: Number(low.toFixed(5)), 
-                        close: Number(close.toFixed(5))
-                    });
-                    basePrice = close;
-                }
-                setHistoricalData(mockData);
-                if (mockData.length > 0) {
-                    setCurrentPrice(mockData[mockData.length - 1].close);
-                }
+                mockData.push({
+                    time: Math.floor(startTime + (i * stepSeconds)),
+                    open: Number(open.toFixed(5)), 
+                    high: Number(high.toFixed(5)), 
+                    low: Number(low.toFixed(5)), 
+                    close: Number(close.toFixed(5))
+                });
+                basePrice = close;
             }
+            setHistoricalData(mockData);
+            if (mockData.length > 0) setCurrentPrice(mockData[mockData.length - 1].close);
+
         } catch(e) { console.error("Could not fetch historical data"); }
     };
 
